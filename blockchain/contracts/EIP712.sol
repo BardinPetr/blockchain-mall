@@ -28,18 +28,22 @@ contract EIP712 {
         this
     ));
 
-    function hashRentalPermit(RentalPermit memory rp) private pure returns (bytes32) {
-        return keccak256(abi.encode(
-            RP_TYPEHASH,
-            rp.deadline,
-            rp.tenant,
-            rp.rentalRate,
-            rp.billingPeriodDuration,
-            rp.billingPeriodDuration
-        ));
+    function hashRentalPermit(RentalPermit memory rp) private view returns (bytes32) {
+        return keccak256(abi.encodePacked(
+                "\x19\x01",
+                DOMAIN_SEPARATOR,
+                keccak256(abi.encode(
+                    RP_TYPEHASH,
+                    rp.deadline,
+                    rp.tenant,
+                    rp.rentalRate,
+                    rp.billingPeriodDuration,
+                    rp.billingsCount
+                ))
+            ));
     }
 
-    function verify(address signer, RentalPermit memory rp, Sign memory sign) public pure returns (bool) {
+    function verify(address signer, RentalPermit memory rp, Sign memory sign) public view returns (bool) {
         return signer == ecrecover(hashRentalPermit(rp), sign.v, sign.r, sign.s);
     }
 }
