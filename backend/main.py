@@ -26,6 +26,7 @@ async def main(request):
 
 
 schema = load_schema_from_path("../schema.graphql")
+print("Schema=" + str(schema))
 executable_schema = make_executable_schema(
     schema,
     [query,
@@ -43,4 +44,5 @@ app = Starlette(
 )
 
 if __name__ == "__main__":
+    print("Starting...")
     uvicorn.run("main:app", host="0.0.0.0", port=81)
