@@ -33,11 +33,6 @@ const MetamaskAuth = () => {
 
         const rsv = parseSignature(sign);
 
-        console.log({
-                address,
-                ...rsv
-            })
-
         const authed = await serverAuth({
             variables: {
                 address,
@@ -45,12 +40,13 @@ const MetamaskAuth = () => {
             }
         })
 
-        console.log(authed)
+        if (authed.data.authentication !== undefined) {
+            setAuthenticated(true);
+        }
     }
 
     const connect = async () => {
         let acc = (await eth.request({method: "eth_requestAccounts"}))[0];
-        // acc = Web3.utils.toChecksumAddress(acc);
         setAccount(acc);
         setLastAccount(acc);
         await authenticate(acc);

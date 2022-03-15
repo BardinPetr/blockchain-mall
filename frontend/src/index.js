@@ -4,7 +4,7 @@ import {ApolloClient, ApolloProvider, InMemoryCache} from "@apollo/client";
 
 import App from "./App";
 
-const DEBUG = true;
+const DEBUG = false;
 
 const client = new ApolloClient({
     uri: `${DEBUG ? "http://0.0.0.0:8089" : window.location.origin}/graphql`,
