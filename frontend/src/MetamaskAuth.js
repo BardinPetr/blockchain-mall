@@ -8,6 +8,7 @@ const [metaMask, hooks] = initializeConnector(
 );
 
 metaMask.connectEagerly();
+localStorage.setItem("access_token_cookie", "")
 
 const {
   useChainId,
