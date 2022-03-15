@@ -6,8 +6,6 @@ services:
       dockerfile: Dockerfile
     ports:
       - "81:81"
-    volumes:
-      - ./schema.graphql:/schema.graphql
     env_file:
       .env.example
     networks:
