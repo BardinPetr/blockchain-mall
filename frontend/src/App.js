@@ -1,12 +1,15 @@
-import MetamaskAuth from "./MetamaskAuth"
-
 import "./App.css";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+import MetamaskAuth from "./views/MetamaskAuth";
 
 function App() {
   return (
-    <>
-      <MetamaskAuth/>
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<MetamaskAuth/>} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

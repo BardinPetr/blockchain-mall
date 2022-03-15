@@ -19,5 +19,13 @@ def resolve_request_authentication(_, info, address: str) -> str:
 
 @mutation.field("authenticate")
 def resolve_authenticate(_, info, address: str, signedMessage: dict):
-    addr = restore_signer(address, signedMessage)
+    restored_addr = restore_signer(address, signedMessage)
+    print(address, restored_addr)
+    # if restored_addr != address:
+    #     return {"errors": [
+    #         {
+    #             "message": "Authentication failed"
+    #         }
+    #     ]}
+    # else:
     return Authentication(address, address == LANDLORD_ADDR)
