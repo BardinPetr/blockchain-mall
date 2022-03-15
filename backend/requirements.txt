@@ -10,7 +10,6 @@ greenlet==1.1.2
 h11==0.12.0
 idna==3.3
 importlib-metadata==4.10.0
-psycopg2-binary>=2.9
 sniffio==1.2.0
 SQLAlchemy==1.4.29
 starlette==0.17.1

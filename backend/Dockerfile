@@ -1,11 +1,12 @@
-# Dockerfile example
-FROM python:3.9-alpine
+FROM python:3.9
 
-COPY . ./backend
+WORKDIR /backend
 
-WORKDIR backend
+COPY requirements.txt ./
 
-RUN pip install --no-cache-dir --upgrade -r requirements.txt
+RUN pip install --no-cache-dir --upgrade -r ./requirements.txt
+
+COPY ./ ./
 
 EXPOSE 81
 

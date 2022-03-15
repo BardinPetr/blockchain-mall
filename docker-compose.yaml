@@ -1,25 +1,29 @@
 version: '3.7'
 services:
-  solution-api:
-    ports:
-      - "81:81"
+  api:
     build:
       context: backend
       dockerfile: Dockerfile
+    ports:
+      - "81:81"
     volumes:
       - ./schema.graphql:/schema.graphql
     env_file:
       .env.example
-    container_name: solution-api
-  solution-frontend:
-    ports:
-      - "82:82"
+    networks:
+      - nginx_network
+
+  frontend:
     build:
       context: frontend
       dockerfile: Dockerfile
+    ports:
+      - "82:82"
     env_file:
       .env.example
-    container_name: solution-frontend
+    networks:
+      - nginx_network
+
   solution-web:
     build:
       context: gateway
@@ -28,5 +32,11 @@ services:
       - '80:80'
     container_name: solution-web
     depends_on:
-      - solution-api
-      - solution-frontend
+      - api
+      - frontend
+    networks:
+      - nginx_network
+
+networks:
+  nginx_network:
+    driver: bridge

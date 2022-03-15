@@ -1,7 +1,3 @@
 FROM nginx
 
-COPY ./nginx-proxy.conf /etc/nginx/nginx.conf
-
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
+COPY ./nginx-proxy.conf /etc/nginx/conf.d/default.conf
