@@ -4,8 +4,8 @@ import dotenv
 from ariadne import ObjectType
 from dto.authentication import Authentication
 
-from backend.error.exceptions import AuthenticationFailed
-from backend.web3.signatures import create_message, restore_signer
+from error.exceptions import AuthenticationFailed
+from auth.signatures import create_message, restore_signer
 
 mutation = ObjectType("Mutation")
 

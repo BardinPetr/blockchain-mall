@@ -1,13 +1,18 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import {ApolloClient, ApolloProvider, InMemoryCache} from "@apollo/client";
+import {ApolloClient, ApolloProvider, createHttpLink, InMemoryCache} from "@apollo/client";
 
 import App from "./App";
 
 const DEBUG = false;
 
-const client = new ApolloClient({
+const httpLink = createHttpLink({
     uri: `${DEBUG ? "http://0.0.0.0:8089" : window.location.origin}/graphql`,
+    credentials: 'same-origin'
+});
+
+const client = new ApolloClient({
+    uri: httpLink,
     cache: new InMemoryCache(),
 });
 
