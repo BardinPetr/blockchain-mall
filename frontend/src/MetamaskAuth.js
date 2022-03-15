@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { initializeConnector } from "@web3-react/core";
 import { MetaMask } from "@web3-react/metamask";
@@ -7,7 +7,7 @@ const [metaMask, hooks] = initializeConnector(
   (actions) => new MetaMask(actions)
 );
 
-console.log(hooks)
+metaMask.connectEagerly();
 
 const {
   useChainId,
@@ -15,7 +15,7 @@ const {
   useError,
   // useIsActivating,
   useIsActive,
-  // useProvider,
+  useProvider,
 } = hooks;
 
 function MetamaskAuth() {
@@ -25,20 +25,44 @@ function MetamaskAuth() {
   // const isActivating = useIsActivating();
   const isActive = useIsActive();
   // const provider = useProvider();
+  const [accountChanged, setAccountChanged] = useState(undefined);
 
   const authenticate = async () => {
-    await metaMask.activate(chainId);
+    if (!isActive) {
+      await metaMask.activate(chainId);
+    }
+    setAccountChanged(false);
   };
 
-  useEffect()
+  useEffect(() => {
+    if (account) {
+      console.log(localStorage.getItem("lastAccount"));
+      setAccountChanged(localStorage.getItem("lastAccount") !== account);
+      localStorage.setItem("lastAccount", account);
+      console.log(localStorage.getItem("lastAccount"));
+    }
+  }, [account]);
+
   return (
     <>
-      {isActive ? (
+      {isActive && !accountChanged ? (
         <p className="account__address">{account}</p>
       ) : (
-        <button className="authentication__authenticate" onClick={authenticate}>
-          Authenticate
-        </button>
+        <>
+          <button
+            className="authentication__authenticate"
+            onClick={authenticate}
+          >
+            Authenticate
+          </button>
+
+          {accountChanged && (
+            <p className="authentication__warning">
+              Your MetaMask account is different from the one you authenticated
+              with before
+            </p>
+          )}
+        </>
       )}
       {error && <p>Error: {error.toString()}</p>}
     </>
