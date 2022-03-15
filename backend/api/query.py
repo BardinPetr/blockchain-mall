@@ -1,10 +1,15 @@
 from typing import Optional
 
+import dotenv
 from ariadne import ObjectType
+import os
 
 from dto.authentication import Authentication
 
 query = ObjectType("Query")
+
+dotenv.load_dotenv(verbose=True, override=True)
+LANDLORD_ADDR = os.getenv("LANDLORD_ADDRESS")
 
 
 @query.field("authentication")
@@ -14,4 +19,4 @@ def resolve_request_authentication(_, info) -> Optional[Authentication]:
     if address not in cookies:
         return None
 
-    return Authentication("test_address_1", True) # TODO
+    return Authentication(address, address == LANDLORD_ADDR)
