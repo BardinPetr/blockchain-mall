@@ -20,13 +20,13 @@ services:
     env_file:
       .env.example
     container_name: solution-web
-  http-gateway:
-    image: nginx:stable
+  gateway:
+    build:
+      context: gateway
+      dockerfile: Dockerfile
     ports:
       - '80:80'
-    container_name: http-gateway
-    volumes:
-      - ./nginx-proxy.conf:/etc/nginx/nginx.conf:ro
+    container_name: solution-gateway
     depends_on:
       - backend
       - frontend
