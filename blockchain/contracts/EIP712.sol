@@ -7,7 +7,7 @@ struct Sign {
     bytes32 s;
 }
 
-string constant RP_TYPE = "RentalPermit(uint256 deadline, address tenant, uint256 rentalRate, uint256 billingPeriodDuration, uint256 billingsCount)";
+string constant RP_TYPE = "RentalPermit(uint256 deadline,address tenant,uint256 rentalRate,uint256 billingPeriodDuration,uint256 billingsCount)";
 struct RentalPermit {
     uint256 deadline;
     address tenant;
@@ -19,7 +19,7 @@ struct RentalPermit {
 contract EIP712 {
     bytes32 private constant RP_TYPEHASH = keccak256(abi.encodePacked(RP_TYPE));
 
-    string private constant EIP712_DOMAIN = "EIP712Domain(string name, string version, address verifyingContract)";
+    string private constant EIP712_DOMAIN = "EIP712Domain(string name,string version,address verifyingContract)";
     bytes32 private constant EIP712_DOMAIN_TYPEHASH = keccak256(abi.encodePacked(EIP712_DOMAIN));
     bytes32 private DOMAIN_SEPARATOR = keccak256(abi.encode(
         EIP712_DOMAIN_TYPEHASH,
