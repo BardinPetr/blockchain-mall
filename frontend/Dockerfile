@@ -1,7 +1,16 @@
-# Dockerfile example
-FROM python:3.9-alpine
+FROM node:alpine
 
-COPY . .
+WORKDIR /app
 
-CMD "echo" "Hello, world!"
+COPY package.json ./
+COPY package-lock.json ./
 
+RUN npm install
+
+COPY ./ ./
+
+RUN npm run build
+
+EXPOSE 82
+
+CMD ["npm", "run", "serve"]
