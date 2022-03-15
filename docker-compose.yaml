@@ -1,12 +1,32 @@
 version: '3.7'
 services:
-  web:
+  backend:
     ports:
-      - "80:80"
+      - "81:81"
+    build:
+      context: backend
+      dockerfile: Dockerfile
+    volumes:
+      - ./schema.graphql:/schema.graphql
+    env_file:
+      .env.example
+    container_name: solution-api
+  frontend:
+    ports:
+      - "82:82"
     build:
       context: frontend
       dockerfile: Dockerfile
-    environment:
-      - LANDLORD_ADDRESS
-      - RPC_URL
+    env_file:
+      .env.example
     container_name: solution-web
+  http-gateway:
+    image: nginx:stable
+    ports:
+      - '80:80'
+    container_name: http-gateway
+    volumes:
+      - ./nginx-proxy.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - backend
+      - frontend

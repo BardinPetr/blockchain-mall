@@ -1,7 +1,13 @@
 # Dockerfile example
 FROM python:3.9-alpine
 
-COPY . .
+COPY . ./backend
 
-CMD "echo" "Hello, world!"
+WORKDIR backend
+
+RUN pip install --no-cache-dir --upgrade -r requirements.txt
+
+EXPOSE 81
+
+CMD ["python", "main.py"]
 
