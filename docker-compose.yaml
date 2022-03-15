@@ -6,8 +6,6 @@ services:
     build:
       context: backend
       dockerfile: Dockerfile
-    volumes:
-      - ./schema.graphql:/schema.graphql
     env_file:
       .env.example
     container_name: api

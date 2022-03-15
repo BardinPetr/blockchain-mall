@@ -25,8 +25,8 @@ async def main(request):
         return gql
 
 
-schema = load_schema_from_path("../schema.graphql")
-print("Schema=" + str(schema))
+schema = load_schema_from_path("schema.graphql")
+print("Schema=" + schema)
 executable_schema = make_executable_schema(
     schema,
     [query,
