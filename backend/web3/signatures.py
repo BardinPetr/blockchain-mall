@@ -3,7 +3,7 @@ from web3 import Web3, HTTPProvider
 import dotenv
 import os
 from eip712_structs import make_domain, EIP712Struct, Boolean, Uint, Address
-
+import jwt
 from backend.web3.msgs import AuthMsg
 
 dotenv.load_dotenv(verbose=True, override=True)

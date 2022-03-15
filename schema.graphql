@@ -6,7 +6,7 @@ type Mutation {
   authenticate(
     address: String!
     signedMessage: InputSignature!
-  ): Authentication!
+  ): Authentication
 }
 type Authentication {
   address: String!

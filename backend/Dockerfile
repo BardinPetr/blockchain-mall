@@ -1,5 +1,8 @@
 # Dockerfile example
-FROM python:3.9-alpine
+FROM python:3.9-slim
+
+RUN apt update
+RUN apt install -y gcc
 
 COPY . ./backend
 

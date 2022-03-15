@@ -20,6 +20,15 @@ if module_path not in sys.path:
     sys.path.append(module_path)
 import uvicorn
 
+schema = load_schema_from_path("schema.graphql")
+print("Schema=" + schema)
+executable_schema = make_executable_schema(
+    schema,
+    [query,
+     mutation])
+
+gql = GraphQL(executable_schema, debug=False, error_formatter=simple_format_error)
+
 
 async def main(request):
     full_path = request.path_params['full_path']
@@ -28,15 +37,6 @@ async def main(request):
         return gql
 
 
-schema = load_schema_from_path("schema.graphql")
-print("Schema=" + schema)
-executable_schema = make_executable_schema(
-    schema,
-    [query,
-     mutation])
-
-
-gql = GraphQL(executable_schema, debug=False, error_formatter=simple_format_error)
 app = Starlette(
     routes=[
         Route('/{full_path:path}', main, methods=["GET", "POST", "OPTIONS"]),
