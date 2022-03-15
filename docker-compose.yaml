@@ -19,14 +19,14 @@ services:
       dockerfile: Dockerfile
     env_file:
       .env.example
-    container_name: solution-web
+    container_name: solution-frontend
   gateway:
     build:
       context: gateway
       dockerfile: Dockerfile
     ports:
       - '80:80'
-    container_name: solution-gateway
+    container_name: solution-web
     depends_on:
       - backend
       - frontend
