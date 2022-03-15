@@ -1,27 +1,23 @@
 version: '3.7'
 services:
   api:
+    ports:
+      - "81:81"
     build:
       context: backend
       dockerfile: Dockerfile
-    ports:
-      - "81:81"
     env_file:
       .env.example
-    networks:
-      - nginx_network
-
+    container_name: api
   frontend:
+    ports:
+      - "82:82"
     build:
       context: frontend
       dockerfile: Dockerfile
-    ports:
-      - "82:82"
     env_file:
       .env.example
-    networks:
-      - nginx_network
-
+    container_name: frontend
   solution-web:
     build:
       context: gateway
@@ -32,9 +28,3 @@ services:
     depends_on:
       - api
       - frontend
-    networks:
-      - nginx_network
-
-networks:
-  nginx_network:
-    driver: bridge

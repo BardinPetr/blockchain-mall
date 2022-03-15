@@ -8,6 +8,7 @@ const [metaMask, hooks] = initializeConnector(
 );
 
 metaMask.connectEagerly();
+localStorage.setItem("access_token_cookie", "")
 
 const {
   useChainId,
@@ -40,7 +41,6 @@ function MetamaskAuth() {
       setAccountChanged(localStorage.getItem("lastAccount") !== account);
       localStorage.setItem("lastAccount", account);
       console.log(localStorage.getItem("lastAccount"));
-      console.log("eblan");
     }
   }, [account]);
 
