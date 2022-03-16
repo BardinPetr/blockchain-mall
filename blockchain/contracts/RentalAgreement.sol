@@ -9,7 +9,7 @@ struct Cashier {
 }
 
 contract RentalAgreement is EIP712 {
-    event PurchasePayment(uint256 value);
+    event PurchasePayment(uint amount);
 
     uint private _roomInternalId;
     address private _landlord;
@@ -20,7 +20,7 @@ contract RentalAgreement is EIP712 {
 
     address[] _cashierAddresses;
     mapping(address => uint256) _cashierNonces;
-    uint256 _curCashierNonce = 0xD;
+    uint256 _curCashierNonce = 1;
 
     constructor(uint roomInternalId) {
         _landlord = msg.sender;
@@ -110,11 +110,11 @@ contract RentalAgreement is EIP712 {
         // if(_cashierNonces[cashier] == 0) revert("Unknown cashier");
         // if(deadline < block.timestamp) revert("The operation is outdated");
         // if(nonce != _cashierNonces[cashier]) revert("Invalid nonce");
-        if(msg.value != value) revert("Invalid value");
+        // if(msg.value != value) revert("Invalid value");
         // if((deadline > getRentEndTime()) || (block.timestamp > _rentalPermit.deadline))
             // revert("The contract is being in not allowed state");
 
         _cashierNonces[cashier]++;
-        emit PurchasePayment(msg.value);
+        emit PurchasePayment(value);
     }
 }
