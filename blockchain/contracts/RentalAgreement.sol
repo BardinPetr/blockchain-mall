@@ -107,12 +107,12 @@ contract RentalAgreement is EIP712 {
         Ticket memory t = Ticket(deadline, nonce, value);
         address cashier = getTicketIssuer(t, cashierSign);
 
-        // if(_cashierNonces[cashier] == 0) revert("Unknown cashier");
-        // if(deadline < block.timestamp) revert("The operation is outdated");
-        // if(nonce != _cashierNonces[cashier]) revert("Invalid nonce");
-        // if(msg.value != value) revert("Invalid value");
-        // if((deadline > getRentEndTime()) || (block.timestamp > _rentalPermit.deadline))
-            // revert("The contract is being in not allowed state");
+         if(_cashierNonces[cashier] == 0) revert("Unknown cashier");
+         if(deadline < block.timestamp) revert("The operation is outdated");
+         if(nonce != _cashierNonces[cashier]) revert("Invalid nonce");
+         if(msg.value != value) revert("Invalid value");
+         if((deadline > getRentEndTime()) || (block.timestamp > _rentalPermit.deadline))
+             revert("The contract is being in not allowed state");
 
         _cashierNonces[cashier]++;
         emit PurchasePayment(value);
