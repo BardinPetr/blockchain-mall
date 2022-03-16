@@ -21,3 +21,11 @@ export const AUTHENTICATE = gql`
         }
     }
 `;
+
+export const CREATE_ROOM = gql`
+  mutation CreateRoom($room: InputRoom!) {
+    createRoom(room: $room) {
+      id
+    }
+  }
+`;
