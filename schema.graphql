@@ -1,5 +1,7 @@
 type Query {
   authentication: Authentication
+  rooms: [Room!]!
+  room(id: ID!): Room!
 }
 type Mutation {
   requestAuthentication(address: String!): String!
@@ -7,10 +9,33 @@ type Mutation {
     address: String!
     signedMessage: InputSignature!
   ): Authentication!
+  getAccessToken(
+    address: String!
+  ): String!
+  createRoom(room: InputRoom!): Room!
+  editRoom(id: ID!, room: InputRoom!): Room!
+  setRoomContractAddress(id: ID!, contractAddress: String): Room!
+  setRoomPublicName(id: ID!, publicName: String): Room!
+  removeRoom(id: ID!): Room!
 }
+# Authentication
 type Authentication {
   address: String!
   isLandlord: Boolean!
+}
+# Rooms
+type Room {
+  id: ID!
+  internalName: String!
+  area: Float!
+  location: String!
+  contractAddress: String
+  publicName: String
+}
+input InputRoom {
+  internalName: String!
+  area: Float!
+  location: String!
 }
 input InputSignature {
   v: String!

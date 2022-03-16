@@ -6,8 +6,9 @@ services:
     build:
       context: backend
       dockerfile: Dockerfile
-    env_file:
-      .env.example
+    environment:
+      LANDLORD_ADDRESS: "${LANDLORD_ADDRESS}"
+      RPC_URL: "${RPC_URL}"
     container_name: api
   frontend:
     ports:
