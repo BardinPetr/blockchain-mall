@@ -14,7 +14,7 @@ from auth.signatures import create_message, restore_signer, generate_token, set_
 
 mutation = ObjectType("Mutation")
 
-dotenv.load_dotenv(verbose=True, override=True)
+dotenv.load_dotenv(verbose=True, override=False)
 LANDLORD_ADDR = os.getenv("LANDLORD_ADDRESS")
 
 w3 = Web3(Web3.HTTPProvider(os.getenv("RPC_URL")))
@@ -31,10 +31,11 @@ def resolve_authenticate(_, info, address: str, signedMessage: dict):
     address = w3.toChecksumAddress(address)
 
     try:
-        address = address
         restored_addr = restore_signer(address, signedMessage)
         if restored_addr == address:
-            set_last_user({"address": address, "isLandlord": address == LANDLORD_ADDR})
+            last_user = {"address": address, "isLandlord": address == LANDLORD_ADDR}
+            print("Setting last_user, LANDLORD_ADDRESS: ", last_user, LANDLORD_ADDR)
+            set_last_user(last_user)
             return Authentication(address, address == LANDLORD_ADDR)
     except BaseException as e:
         print("IN resolve_authenticate" + traceback.format_exc())
