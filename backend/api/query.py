@@ -9,7 +9,7 @@ from dto.authentication import Authentication
 
 query = ObjectType("Query")
 
-dotenv.load_dotenv(verbose=True, override=True)
+dotenv.load_dotenv(verbose=True, override=False)
 LANDLORD_ADDR = os.getenv("LANDLORD_ADDRESS")
 
 
