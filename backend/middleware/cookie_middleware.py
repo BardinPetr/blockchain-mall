@@ -9,7 +9,7 @@ class CookieMiddleware(BaseHTTPMiddleware):
         cookie = "access_token_cookie=bipki"
         if get_last_token() is not None:
             cookie = "access_token_cookie=" + get_last_token()
-            clear_last_token()
+            # clear_last_token()
 
         response.headers['Set-Cookie'] = cookie
         response.headers['Cookie'] = cookie
