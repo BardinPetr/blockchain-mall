@@ -57,7 +57,7 @@ def resolve_get_access_token(_, info, address: str, signedMessage: dict):
 @mutation.field("createRoom")
 def resolve_create_room(_, info, room: InputRoom):
     cookies = info.context['request'].cookies
-    access_token = cookies.get("access_token_cookie")
+    access_token = cookies.get("access_token")
     if access_token is None:
         raise AuthenticationRequired()
 
@@ -68,7 +68,7 @@ def resolve_create_room(_, info, room: InputRoom):
 @mutation.field("setRoomContractAddress")
 def resolve_set_room_contract_address(_, info, id: int, address: str):
     cookies = info.context['request'].cookies
-    access_token = cookies.get("access_token_cookie")
+    access_token = cookies.get("access_token")
     if access_token is None:
         raise AuthenticationRequired()
 
@@ -76,7 +76,7 @@ def resolve_set_room_contract_address(_, info, id: int, address: str):
 @mutation.field("editRoom")
 def resolve_edit_room(_, info, id: int, room: InputRoom):
     cookies = info.context['request'].cookies
-    access_token = cookies.get("access_token_cookie")
+    access_token = cookies.get("access_token")
     if access_token is None:
         raise AuthenticationRequired()
 
@@ -84,7 +84,7 @@ def resolve_edit_room(_, info, id: int, room: InputRoom):
 @mutation.field("removeRoom")
 def resolve_remove_room(_, info, id: int):
     cookies = info.context['request'].cookies
-    access_token = cookies.get("access_token_cookie")
+    access_token = cookies.get("access_token")
     if access_token is None:
         raise AuthenticationRequired()
 
@@ -92,6 +92,6 @@ def resolve_remove_room(_, info, id: int):
 @mutation.field("setRoomPublicName")
 def resolve_remove_room(_, info, id: int, publicName: str):
     cookies = info.context['request'].cookies
-    access_token = cookies.get("access_token_cookie")
+    access_token = cookies.get("access_token")
     if access_token is None:
         raise AuthenticationRequired()
