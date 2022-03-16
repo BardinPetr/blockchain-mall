@@ -37,7 +37,7 @@ def get_access_token(info):
     print("IN get_access_token - cookies:", cookies)
     access_token = cookies.get('access_token_cookie')
     if access_token is None:
-        access_token = info.context['request'].headers.get('CookiePlayground').split("=")[1]
+        access_token = info.context['request'].headers.get('CookiePlayground')
         if access_token is None:
             return None
-    return decode_token(access_token)
+    return decode_token(access_token.split("=")[1])
