@@ -1,7 +1,7 @@
 import os
 from time import time_ns
 
-import dotenv
+
 import eth_account
 import jwt
 from eip712_structs import make_domain
@@ -9,7 +9,7 @@ from web3 import Web3
 
 from auth.msgs import AuthMsg
 
-dotenv.load_dotenv(verbose=True, override=False)
+
 LANDLORD_ADDR = os.getenv("LANDLORD_ADDRESS")
 JWTKEY = os.getenv("JWT_KEY", "testkey")
 

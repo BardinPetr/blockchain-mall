@@ -1,6 +1,6 @@
 from typing import Optional
 
-import dotenv
+
 from ariadne import ObjectType
 import os
 
@@ -9,7 +9,7 @@ from dto.authentication import Authentication
 
 query = ObjectType("Query")
 
-dotenv.load_dotenv(verbose=True, override=False)
+
 LANDLORD_ADDR = os.getenv("LANDLORD_ADDRESS")
 
 
