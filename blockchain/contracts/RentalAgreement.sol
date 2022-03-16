@@ -1,74 +1,108 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.11;
 
-struct Sign {
-    uint8 v;
-    bytes32 r;
-    bytes32 s;
-}
+import "./EIP712.sol";
 
-string constant RP_TYPE = "RentalPermit(uint256 deadline,address tenant,uint256 rentalRate,uint256 billingPeriodDuration,uint256 billingsCount)";
-struct RentalPermit {
-    uint256 deadline;
-    address tenant;
-    uint256 rentalRate;
-    uint256 billingPeriodDuration;
-    uint256 billingsCount;
-}
-
-string constant TICKET_TYPE = "Ticket(uint256 deadline,uint256 nonce,uint256 value)";
-struct Ticket {
-    uint256 deadline;
+struct Cashier {
+    bool valid;
     uint256 nonce;
-    uint256 value;
 }
 
-contract EIP712 {
-    bytes32 private constant TICKET_TYPEHASH = keccak256(abi.encodePacked(TICKET_TYPE));
-    bytes32 private constant RP_TYPEHASH = keccak256(abi.encodePacked(RP_TYPE));
+contract RentalAgreement is EIP712 {
 
-    string private constant EIP712_DOMAIN = "EIP712Domain(string name,string version,address verifyingContract)";
-    bytes32 private constant EIP712_DOMAIN_TYPEHASH = keccak256(abi.encodePacked(EIP712_DOMAIN));
-    bytes32 private DOMAIN_SEPARATOR = keccak256(abi.encode(
-        EIP712_DOMAIN_TYPEHASH,
-        keccak256("Rental Agreement"),
-        keccak256("1.0"),
-        this
-    ));
+    uint private _roomInternalId;
+    address private _landlord;
 
-    function hashRentalPermit(RentalPermit memory rp) private view returns (bytes32) {
-        return keccak256(abi.encodePacked(
-                "\x19\x01",
-                DOMAIN_SEPARATOR,
-                keccak256(abi.encode(
-                    RP_TYPEHASH,
-                    rp.deadline,
-                    rp.tenant,
-                    rp.rentalRate,
-                    rp.billingPeriodDuration,
-                    rp.billingsCount
-                ))
-            ));
+    RentalPermit private _rentalPermit;
+    uint private _rentStartTime;
+    bool private _inRent = false;
+
+    address[] _cashierAddresses;
+    mapping(address => uint256) _cashierNonces;
+    uint256 _curCashierNonce = 0xD;
+
+    constructor(uint roomInternalId) {
+        _landlord = msg.sender;
+        _roomInternalId = roomInternalId;
     }
 
-    function hashTicket(Ticket memory t) private view returns (bytes32) {
-        return keccak256(abi.encodePacked(
-                "\x19\x01",
-                DOMAIN_SEPARATOR,
-                keccak256(abi.encode(
-                    TICKET_TYPEHASH,
-                    t.deadline,
-                    t.nonce,
-                    t.value
-                ))
-            ));
+    function getRoomInternalId() public view returns (uint) {
+        return _roomInternalId;
     }
 
-    function verifyRentalPermit(address signer, RentalPermit memory rp, Sign memory sign) public view returns (bool) {
-        return signer == ecrecover(hashRentalPermit(rp), sign.v, sign.r, sign.s);
+    function getLandlord() public view returns (address) {
+        return _landlord;
     }
 
-    function verifyTicket(address signer, Ticket memory t, Sign memory sign) public view returns (bool) {
-        return signer == ecrecover(hashTicket(t), sign.v, sign.r, sign.s);
+    function getTenant() public view returns (address) {
+        return _rentalPermit.tenant;
+    }
+
+    function getRentalRate() public view returns (uint) {
+        return _rentalPermit.rentalRate;
+    }
+
+    function getBillingPeriodDuration() public view returns (uint) {
+        return _rentalPermit.billingPeriodDuration;
+    }
+
+    function getRentStartTime() public view returns (uint) {
+        return _rentStartTime;
+    }
+
+    function getRentEndTime() public view returns (uint) {
+        return _rentStartTime + _rentalPermit.billingsCount * _rentalPermit.billingPeriodDuration;
+    }
+
+    function rent(uint deadline, address tenant, uint rentalRate, uint billingPeriodDuration, uint billingsCount, Sign memory landlordSign) public payable {
+        if(_inRent) revert("The contract is being in not allowed state");
+
+        RentalPermit memory tmpRP = RentalPermit(deadline, tenant, rentalRate, billingPeriodDuration, billingsCount);
+
+        if(!verifyRentalPermit(_landlord, tmpRP, landlordSign)) revert("Invalid landlord sign");
+        if(deadline < block.timestamp) revert("The operation is outdated");
+        if(msg.sender != tenant) revert("The caller account and the account specified as a tenant do not match");
+        if(tenant == _landlord) revert("The landlord cannot become a tenant");
+        if(rentalRate <= 0) revert("Rent amount should be strictly greater than zero");
+        if(billingPeriodDuration <= 0) revert("Rent period should be strictly greater than zero");
+        if(billingsCount <= 0) revert("Rent period repeats should be strictly greater than zero");
+        if(msg.value < rentalRate) revert("Incorrect deposit");
+
+        _inRent = true;
+        _rentStartTime = block.timestamp;
+        _rentalPermit = tmpRP;
+    }
+
+    function addCashier(address addr) public {
+        if(msg.sender != _rentalPermit.tenant) revert("You are not a tenant");
+        if(addr == _landlord) revert("The landlord cannot become a cashier");
+        if(addr == 0x0000000000000000000000000000000000000000) revert("Zero address cannot become a cashier");
+
+        _cashierAddresses.push(addr);
+        _cashierNonces[addr] = _curCashierNonce++;
+    }
+
+    function removeCashier(address cashierAddr) public {
+        if(msg.sender != _rentalPermit.tenant) revert("You are not a tenant");
+        if(_cashierNonces[cashierAddr] == 0) revert("Unknown cashier");
+
+        _cashierNonces[cashierAddr] = 0;
+        uint i = 0;
+        for(; i < _cashierAddresses.length; i++) if(_cashierAddresses[i] == cashierAddr) break;
+        _cashierAddresses[i] = _cashierAddresses[_cashierAddresses.length - 1];
+        _cashierAddresses.pop();
+    }
+
+    function getCashierNonce(address cashierAddr) public view returns (uint)  {
+        return _cashierNonces[cashierAddr];
+    }
+
+    function getCashiersList() public view returns (address[] memory){
+        return _cashierAddresses;
+    }
+
+    function pay(uint deadline, uint nonce, uint value, Sign memory cashierSign) public payable {
+        Ticket memory t = Ticket(deadline, nonce, value);
+        // if() revert("");
     }
 }
