@@ -45,7 +45,7 @@ def resolve_authenticate(_, info, address: str, signedMessage: dict):
 
 #        bipki
 @mutation.field("getAccessToken")
-def resolve_get_access_token(_, info, address: str, signedMessage: dict):
+def resolve_get_access_token(_, info, address: str):
     address = w3.toChecksumAddress(address)
     try:
         return generate_token(address, 'landlord' if address == LANDLORD_ADDR else 'user')
