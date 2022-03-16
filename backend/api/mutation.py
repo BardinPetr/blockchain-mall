@@ -37,6 +37,15 @@ def resolve_authenticate(_, info, address: str, signedMessage: dict):
     raise AuthenticationFailed()
 
 
+@mutation.field("getAccessToken")
+def resolve_get_access_token(_, info, address: str, signedMessage: dict):
+    try:
+        address = address.lower()
+        return generate_token(address, 'landlord' if address == LANDLORD_ADDR.lower() else 'user')
+    except BaseException as e:
+        print("IN resolve_authenticate" + traceback.format_exc())
+        raise resolve_get_access_token()
+
 @mutation.field("createRoom")
 def resolve_create_room(_, info, room: InputRoom):
     cookies = info.context['request'].cookies

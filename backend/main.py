@@ -42,8 +42,8 @@ app = Starlette(
         Route('/{full_path:path}', main, methods=["GET", "POST", "OPTIONS"]),
     ],
     middleware=[
-        Middleware(CORSMiddleware, allow_origins=['*'], allow_methods=("GET", "POST", "OPTIONS"))
-    ]
+        Middleware(CORSMiddleware, allow_origins=['*'], allow_methods=("GET", "POST", "OPTIONS")),
+    ],
 )
 
 if __name__ == "__main__":
