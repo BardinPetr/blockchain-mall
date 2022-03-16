@@ -8,7 +8,7 @@ localStorage.setItem("access_token_cookie", "");
 
 const eth = window.ethereum;
 
-const MetamaskAuth = () => {
+const MetamaskAuth = ({children}) => {
     const [accountInvalid, setAccountInvalid] = useState(false);
     const [authenticated, setAuthenticated] = useState(false);
     const [account, setAccount] = useState("");
@@ -44,19 +44,8 @@ const MetamaskAuth = () => {
                 ...rsv
             }
         })
-        const authed = await getAccessToken({
-            variables: {
-                address,
-                ...rsv
-            }
-        })
-
-        const token = authed.data.token;
-        if (token !== undefined) {
-            setAuthCookie(token);
-            console.log(decodeAuthCookie());
-            setAuthenticated(true);
-        }
+        console.log(decodeAuthCookie());
+        setAuthenticated(true);
     }
 
     const connect = async () => {

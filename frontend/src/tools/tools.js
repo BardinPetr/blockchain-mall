@@ -13,6 +13,9 @@ export function parseSignature(signature) {
 export const getLastAccount = () => localStorage.getItem("lastAccount");
 export const setLastAccount = (account) => localStorage.setItem("lastAccount", account);
 
+export const getAccount = () => localStorage.getItem("account");
+export const setAccount = (account) => localStorage.setItem("account", account);
+
 export const setAuthCookie = (jwt) => Cookies.set('access_token_cookie', jwt);
 export const getAuthCookie = () => Cookies.get('access_token_cookie');
-export const decodeAuthCookie = () => decode(getAuthCookie());
+export const decodeAuthCookie = () => decode(getAuthCookie()).payload;
