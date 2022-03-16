@@ -30,7 +30,7 @@ def create_message(address):
 def restore_signer(address, signature):
     print("IN restore_signer address, signature, store: ", address, signature, store)
     msg = eth_account.messages.encode_defunct(store[address].encode('utf-8'))
-    return w3.eth.account.recover_message(msg, vrs=(int(signature['v']), signature['r'], signature['s']))
+    return w3.eth.account.recover_message(msg, vrs=(int(signature['v'], 16), signature['r'], signature['s']))
 
 
 def generate_token(address, role):

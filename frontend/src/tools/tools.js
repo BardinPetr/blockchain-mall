@@ -1,3 +1,6 @@
+import Cookies from 'js-cookie'
+import {decode} from "jsonwebtoken";
+
 export function parseSignature(signature) {
     if (signature.length > 130) signature = signature.substring(2, 132);
     return {
@@ -9,3 +12,7 @@ export function parseSignature(signature) {
 
 export const getLastAccount = () => localStorage.getItem("lastAccount");
 export const setLastAccount = (account) => localStorage.setItem("lastAccount", account);
+
+export const setAuthCookie = (jwt) => Cookies.set('access_token_cookie', jwt);
+export const getAuthCookie = () => Cookies.get('access_token_cookie');
+export const decodeAuthCookie = () => decode(getAuthCookie());

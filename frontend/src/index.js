@@ -4,7 +4,7 @@ import {ApolloClient, ApolloProvider, createHttpLink, InMemoryCache} from "@apol
 
 import App from "./App";
 
-const DEBUG = false;
+const DEBUG = true;
 
 const httpLink = createHttpLink({
     uri: `${DEBUG ? "http://0.0.0.0:8089" : window.location.origin}/graphql`,

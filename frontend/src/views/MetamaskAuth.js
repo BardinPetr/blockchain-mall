@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
-import {getLastAccount, parseSignature, setLastAccount} from "../tools/tools";
+import {decodeAuthCookie, getLastAccount, parseSignature, setAuthCookie, setLastAccount} from "../tools/tools";
 import {useMutation} from "@apollo/client";
-import {AUTHENTICATE, REQUEST_AUTHENTICATION} from "../gql/mutations";
+import {AUTHENTICATE, GET_ACCESS_TOKEN, REQUEST_AUTHENTICATION} from "../gql/mutations";
 import Web3 from "web3";
 
 localStorage.setItem("access_token_cookie", "");
@@ -21,6 +21,10 @@ const MetamaskAuth = () => {
         fetchPolicy: "no-cache"
     })
 
+    const [getAccessToken] = useMutation(GET_ACCESS_TOKEN, {
+        fetchPolicy: "no-cache"
+    })
+
     const authenticate = async (address) => {
         const res = await serverReqAuth({
             variables: {address},
@@ -34,14 +38,23 @@ const MetamaskAuth = () => {
 
         const rsv = parseSignature(sign);
 
-        const authed = await serverAuth({
+        await serverAuth({
+            variables: {
+                address,
+                ...rsv
+            }
+        })
+        const authed = await getAccessToken({
             variables: {
                 address,
                 ...rsv
             }
         })
 
-        if (authed.data.authentication !== undefined) {
+        const token = authed.data.token;
+        if (token !== undefined) {
+            setAuthCookie(token);
+            console.log(decodeAuthCookie());
             setAuthenticated(true);
         }
     }

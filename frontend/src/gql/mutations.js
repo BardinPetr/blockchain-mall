@@ -22,6 +22,19 @@ export const AUTHENTICATE = gql`
     }
 `;
 
+export const GET_ACCESS_TOKEN = gql`
+    mutation GetAccessToken($address: String!, $v: String!, $r: String!, $s: String!) {
+        token: getAccessToken(
+            address: $address
+            signedMessage: {
+                v: $v,
+                r: $r,
+                s: $s
+            }
+        )
+    }
+`;
+
 export const CREATE_ROOM = gql`
   mutation CreateRoom($room: InputRoom!) {
     createRoom(room: $room) {
