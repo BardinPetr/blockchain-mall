@@ -40,4 +40,5 @@ def get_access_token(info):
         access_token = info.context['request'].headers.get('CookiePlayground')
         if access_token is None:
             return None
-    return decode_token(access_token.split("=")[1])
+        access_token = access_token.split("=")[1]
+    return decode_token(access_token)
