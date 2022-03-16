@@ -10,7 +10,7 @@ from dto.room import Room
 from web3 import Web3
 
 from error.exceptions import AuthenticationFailed, UserIsNotLord, AuthenticationRequired, ValidationError
-from auth.signatures import create_message, restore_signer, generate_token, set_last_user
+from auth.signatures import create_message, restore_signer, generate_token, set_last_token
 
 mutation = ObjectType("Mutation")
 
@@ -34,9 +34,9 @@ def resolve_authenticate(_, info, address: str, signedMessage: dict):
     try:
         restored_addr = restore_signer(address, signedMessage)
         if restored_addr == address:
-            last_user = {"address": address, "isLandlord": address == LANDLORD_ADDR}
-            print("Setting last_user, LANDLORD_ADDRESS, RPC_URL: ", last_user, LANDLORD_ADDR, RPC_URL)
-            set_last_user(last_user)
+            token = generate_token(address, 'landlord' if address == LANDLORD_ADDR else 'user')
+            print("Setting token, LANDLORD_ADDRESS, RPC_URL: ", token, LANDLORD_ADDR, RPC_URL)
+            set_last_token(token)
             return Authentication(address, address == LANDLORD_ADDR)
     except BaseException as e:
         print("IN resolve_authenticate" + traceback.format_exc())
@@ -44,7 +44,6 @@ def resolve_authenticate(_, info, address: str, signedMessage: dict):
     raise AuthenticationFailed()
 
 
-#        bipki
 @mutation.field("getAccessToken")
 def resolve_get_access_token(_, info, address: str):
     address = w3.toChecksumAddress(address)
@@ -58,7 +57,7 @@ def resolve_get_access_token(_, info, address: str):
 @mutation.field("createRoom")
 def resolve_create_room(_, info, room: InputRoom):
     cookies = info.context['request'].cookies
-    access_token = cookies.get("access_token")
+    access_token = cookies.get("access_token_cookie")
     print("IN resolve_create_room - cookies, access_token: ", cookies, access_token)
     if access_token is None:
         raise AuthenticationRequired()
@@ -70,7 +69,7 @@ def resolve_create_room(_, info, room: InputRoom):
 @mutation.field("setRoomContractAddress")
 def resolve_set_room_contract_address(_, info, id: int, address: str):
     cookies = info.context['request'].cookies
-    access_token = cookies.get("access_token")
+    access_token = cookies.get("access_token_cookie")
     print("IN resolve_set_room_contract_address - cookies, access_token: ", cookies, access_token)
     if access_token is None:
         raise AuthenticationRequired()
@@ -79,7 +78,7 @@ def resolve_set_room_contract_address(_, info, id: int, address: str):
 @mutation.field("editRoom")
 def resolve_edit_room(_, info, id: int, room: InputRoom):
     cookies = info.context['request'].cookies
-    access_token = cookies.get("access_token")
+    access_token = cookies.get("access_token_cookie")
     print("IN resolve_edit_room - cookies, access_token: ", cookies, access_token)
     if access_token is None:
         raise AuthenticationRequired()
@@ -88,7 +87,7 @@ def resolve_edit_room(_, info, id: int, room: InputRoom):
 @mutation.field("removeRoom")
 def resolve_remove_room(_, info, id: int):
     cookies = info.context['request'].cookies
-    access_token = cookies.get("access_token")
+    access_token = cookies.get("access_token_cookie")
     print("IN resolve_remove_room - cookies, access_token: ", cookies, access_token)
     if access_token is None:
         raise AuthenticationRequired()
@@ -97,7 +96,7 @@ def resolve_remove_room(_, info, id: int):
 @mutation.field("setRoomPublicName")
 def resolve_set_room_public_name(_, info, id: int, publicName: str):
     cookies = info.context['request'].cookies
-    access_token = cookies.get("access_token")
+    access_token = cookies.get("access_token_cookie")
     print("IN resolve_set_room_public_name - cookies, access_token: ", cookies, access_token)
     if access_token is None:
         raise AuthenticationRequired()
