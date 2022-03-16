@@ -10,7 +10,7 @@ from dto.room import Room
 from web3 import Web3
 
 from error.exceptions import AuthenticationFailed, UserIsNotLord, AuthenticationRequired, ValidationError
-from auth.signatures import create_message, restore_signer, generate_token
+from auth.signatures import create_message, restore_signer, generate_token, set_last_user
 
 mutation = ObjectType("Mutation")
 
@@ -29,10 +29,12 @@ def resolve_request_authentication(_, info, address: str) -> str:
 @mutation.field("authenticate")
 def resolve_authenticate(_, info, address: str, signedMessage: dict):
     address = w3.toChecksumAddress(address)
+
     try:
         address = address
         restored_addr = restore_signer(address, signedMessage)
         if restored_addr == address:
+            set_last_user({"address": address, "isLandlord": address == LANDLORD_ADDR})
             return Authentication(address, address == LANDLORD_ADDR)
     except BaseException as e:
         print("IN resolve_authenticate" + traceback.format_exc())

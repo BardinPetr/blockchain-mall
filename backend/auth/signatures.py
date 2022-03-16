@@ -17,6 +17,7 @@ domain = make_domain(name='Rental Agreement', version='1.0')
 
 w3 = Web3(Web3.HTTPProvider(os.getenv("RPC_URL")))
 store = {}
+last_user = {}
 
 
 def create_message(address):
@@ -43,3 +44,13 @@ def decode_token(token):
         return jwt.decode(token, JWTKEY, algorithms="HS256")
     except:
         return None
+
+
+def set_last_user(_last_user):
+    global last_user
+    last_user = _last_user
+
+
+def get_last_user():
+    global last_user
+    return last_user
