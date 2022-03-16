@@ -23,7 +23,11 @@ export const GET_ROOM = gql`
 
 export const GET_TENANT_ROOMS = gql`
   query($address: String) {
-    rooms()
+    rooms(tenantAddress: $address) {
+      id
+      publicName
+      status
+    }
   }
 `;
 
@@ -32,6 +36,7 @@ export const GET_ALL_ROOMS = gql`
     rooms {
       id
       publicName
+      status
     }
   }
 `;
