@@ -1,4 +1,4 @@
-from pymongo import MongoClient
+# from pymongo import MongoClient
 
-client = MongoClient('mongodb://localhost:27017')
-db = client.mall
+# client = MongoClient('mongodb://localhost:27017')
+# db = client.mall

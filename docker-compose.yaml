@@ -1,14 +1,5 @@
 version: '3.7'
 services:
-  db:
-    image: mongo
-    restart: always
-    ports:
-      - "27017:27017"
-    environment:
-      MONGO_INITDB_DATABASE: mall
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
   api:
     ports:
       - "81:81"
@@ -18,8 +9,6 @@ services:
     env_file:
       .env.example
     container_name: api
-    depends_on:
-      - db
   frontend:
     ports:
       - "82:82"
