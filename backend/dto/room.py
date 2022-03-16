@@ -1,5 +1,5 @@
 class Room:
-    id: int
+    id: str
     internalName: str
     area: float
     location: str

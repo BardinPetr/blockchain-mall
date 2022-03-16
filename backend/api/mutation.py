@@ -4,6 +4,8 @@ import traceback
 
 
 from ariadne import ObjectType
+
+from auth.auth import get_access_token
 from dto.authentication import Authentication
 from dto.input_room import InputRoom
 from dto.room import Room
@@ -56,50 +58,40 @@ def resolve_get_access_token(_, info, address: str):
 
 
 @mutation.field("createRoom")
-def resolve_create_room(_, info, room: InputRoom):
-    cookies = info.context['request'].cookies
-    access_token = cookies.get("access_token_cookie")
-    print("IN resolve_create_room - cookies, access_token: ", cookies, access_token)
+def resolve_create_room(_, info, room: dict):
+    access_token = get_access_token(info)
     if access_token is None:
         raise AuthenticationRequired()
 
-    if room.area <= 0:
+    if room['area'] <= 0:
         raise ValidationError("The room area must be greater than zero")
 
-    return add_room(Room(room.internalName, room.area, room.location))
+    return add_room(Room(room['internalName'], room['area'], room['location']))
 
 
 @mutation.field("setRoomContractAddress")
 def resolve_set_room_contract_address(_, info, id: int, address: str):
-    cookies = info.context['request'].cookies
-    access_token = cookies.get("access_token_cookie")
-    print("IN resolve_set_room_contract_address - cookies, access_token: ", cookies, access_token)
+    access_token = get_access_token(info)
     if access_token is None:
         raise AuthenticationRequired()
 
 
 @mutation.field("editRoom")
 def resolve_edit_room(_, info, id: int, room: InputRoom):
-    cookies = info.context['request'].cookies
-    access_token = cookies.get("access_token_cookie")
-    print("IN resolve_edit_room - cookies, access_token: ", cookies, access_token)
+    access_token = get_access_token(info)
     if access_token is None:
         raise AuthenticationRequired()
 
 
 @mutation.field("removeRoom")
 def resolve_remove_room(_, info, id: int):
-    cookies = info.context['request'].cookies
-    access_token = cookies.get("access_token_cookie")
-    print("IN resolve_remove_room - cookies, access_token: ", cookies, access_token)
+    access_token = get_access_token(info)
     if access_token is None:
         raise AuthenticationRequired()
 
 
 @mutation.field("setRoomPublicName")
 def resolve_set_room_public_name(_, info, id: int, publicName: str):
-    cookies = info.context['request'].cookies
-    access_token = cookies.get("access_token_cookie")
-    print("IN resolve_set_room_public_name - cookies, access_token: ", cookies, access_token)
+    access_token = get_access_token(info)
     if access_token is None:
         raise AuthenticationRequired()
