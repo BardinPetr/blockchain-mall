@@ -28,8 +28,7 @@ def resolve_authenticate(_, info, address: str, signedMessage: dict):
         address = address.lower()
         restored_addr = restore_signer(address, signedMessage).lower()
         if restored_addr == address:
-            token = generate_token(address, 'landlord' if address == LANDLORD_ADDR.lower() else 'user')
-            return Authentication(address, address == LANDLORD_ADDR.lower(), token)
+            return Authentication(address, address == LANDLORD_ADDR.lower())
     except BaseException as e:
         print("IN resolve_authenticate" + traceback.format_exc())
         pass
