@@ -2,7 +2,7 @@ import os
 import time
 import traceback
 
-import dotenv
+
 from ariadne import ObjectType
 from dto.authentication import Authentication
 from dto.input_room import InputRoom
@@ -14,7 +14,7 @@ from auth.signatures import create_message, restore_signer, generate_token, set_
 
 mutation = ObjectType("Mutation")
 
-dotenv.load_dotenv(verbose=True, override=False)
+
 LANDLORD_ADDR = os.getenv("LANDLORD_ADDRESS")
 
 w3 = Web3(Web3.HTTPProvider(os.getenv("RPC_URL")))

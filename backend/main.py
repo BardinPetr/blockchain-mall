@@ -1,7 +1,7 @@
 import os
 import sys
 
-import dotenv
+
 from ariadne import load_schema_from_path, make_executable_schema
 from ariadne.asgi import GraphQL
 from starlette.applications import Starlette
@@ -14,7 +14,7 @@ from api.query import query
 from error.error_formatter import simple_format_error
 from middleware.cookie_middleware import CookieMiddleware
 
-dotenv.load_dotenv(verbose=True, override=False)
+
 
 module_path = os.path.abspath(os.path.join(os.getcwd(), ".."))
 if module_path not in sys.path:
