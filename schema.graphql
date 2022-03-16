@@ -9,6 +9,10 @@ type Mutation {
     address: String!
     signedMessage: InputSignature!
   ): Authentication!
+  getAccessToken(
+    address: String!
+    signedMessage: InputSignature!
+  ): String!
   createRoom(room: InputRoom!): Room!
   editRoom(id: ID!, room: InputRoom!): Room!
   setRoomContractAddress(id: ID!, contractAddress: String): Room!
