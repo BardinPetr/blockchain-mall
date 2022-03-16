@@ -1,4 +1,13 @@
-FROM registry.gitlab.com/onti-fintech/onti-2022-fintech/fintech2022004/mall/bardinpetr/backend-base
+FROM python:3.9-slim
+
+RUN apt update
+RUN apt install -y gcc
+
+WORKDIR backend
+
+COPY requirements.txt ./
+
+RUN pip install --no-cache-dir --upgrade -r requirements.txt
 
 COPY ./ ./
 
