@@ -1,4 +1,5 @@
 import os
+from time import time_ns
 
 import dotenv
 import eth_account
@@ -20,14 +21,13 @@ store = {}
 
 def create_message(address):
     global store
-    msg = AuthMsg(address=address, is_landlord=(address == LANDLORD_ADDR))
-    msg_json = msg.to_message_json(domain)
-    store[address] = msg_json
-    return msg_json
+    msg = address + "@" + str(time_ns())
+    store[address] = msg
+    return msg
 
 
 def restore_signer(address, signature):
-    msg = eth_account.messages.encode_structured_data(text=store[address])
+    msg = eth_account.messages.encode_defunct(store[address].encode('utf-8'))
     return w3.eth.account.recover_message(msg, vrs=(int(signature['v']), signature['r'], signature['s']))
 
 

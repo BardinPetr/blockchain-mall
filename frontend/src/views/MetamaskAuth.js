@@ -2,6 +2,7 @@ import {useEffect, useState} from "react";
 import {getLastAccount, parseSignature, setLastAccount} from "../tools/tools";
 import {useMutation} from "@apollo/client";
 import {AUTHENTICATE, REQUEST_AUTHENTICATION} from "../gql/mutations";
+import Web3 from "web3";
 
 localStorage.setItem("access_token_cookie", "");
 
@@ -26,8 +27,8 @@ const MetamaskAuth = () => {
         });
 
         const sign = await eth.request({
-            method: "eth_signTypedData_v3",
-            params: [address, res.data.message],
+            method: "personal_sign",
+            params: [Web3.utils.toHex(res.data.message), address],
             from: address,
         });
 

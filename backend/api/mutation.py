@@ -19,7 +19,6 @@ LANDLORD_ADDR = os.getenv("LANDLORD_ADDRESS")
 
 @mutation.field("requestAuthentication")
 def resolve_request_authentication(_, info, address: str) -> str:
-    # return address + " " + str(time.time_ns())
     return create_message(address)
 
 
