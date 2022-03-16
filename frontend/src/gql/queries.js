@@ -6,3 +6,14 @@ export const AUTHENTICATION = gql`
     }
 `;
 
+export const GET_ROOM = gql`
+  query($id: String) {
+    rooms(id: $id) {
+      internalName
+      area
+      location
+      publicName
+      contractAddress
+    }
+  }
+`;
