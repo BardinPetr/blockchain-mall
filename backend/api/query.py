@@ -5,7 +5,7 @@ from ariadne import ObjectType
 
 from auth.auth import get_access_token
 from dto.authentication import Authentication
-from error.exceptions import AuthenticationRequired
+from error.exceptions import AuthenticationRequired, UserIsNotLord
 from model.storage import get_room_by_id
 
 query = ObjectType("Query")
@@ -28,5 +28,7 @@ def resolve_get_room(_, info, id: int):
     access_token = get_access_token(info)
     if access_token is None:
         raise AuthenticationRequired()
+    if access_token['role'] != "landlord":
+        raise UserIsNotLord()
 
     return get_room_by_id(id)
