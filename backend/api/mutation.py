@@ -38,39 +38,39 @@ def resolve_authenticate(_, info, address: str, signedMessage: dict):
 
 @mutation.field("createRoom")
 def resolve_create_room(_, info, room: InputRoom):
-    headers = info.context['request'].headers
-    access_token = headers.get("Authorization")
+    cookies = info.context['request'].cookies
+    access_token = cookies.get("access_token_cookie")
     if access_token is None:
         raise AuthenticationRequired()
 
 
 @mutation.field("setRoomContractAddress")
 def resolve_set_room_contract_address(_, info, id: int, address: str):
-    headers = info.context['request'].headers
-    access_token = headers.get("Authorization")
+    cookies = info.context['request'].cookies
+    access_token = cookies.get("access_token_cookie")
     if access_token is None:
         raise AuthenticationRequired()
 
 
 @mutation.field("editRoom")
 def resolve_edit_room(_, info, id: int, room: InputRoom):
-    headers = info.context['request'].headers
-    access_token = headers.get("Authorization")
+    cookies = info.context['request'].cookies
+    access_token = cookies.get("access_token_cookie")
     if access_token is None:
         raise AuthenticationRequired()
 
 
 @mutation.field("removeRoom")
 def resolve_remove_room(_, info, id: int):
-    headers = info.context['request'].headers
-    access_token = headers.get("Authorization")
+    cookies = info.context['request'].cookies
+    access_token = cookies.get("access_token_cookie")
     if access_token is None:
         raise AuthenticationRequired()
 
 
 @mutation.field("setRoomPublicName")
 def resolve_remove_room(_, info, id: int, publicName: str):
-    headers = info.context['request'].headers
-    access_token = headers.get("Authorization")
+    cookies = info.context['request'].cookies
+    access_token = cookies.get("access_token_cookie")
     if access_token is None:
         raise AuthenticationRequired()
