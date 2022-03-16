@@ -9,4 +9,4 @@ class AuthMsg(EIP712Struct):
     timestamp = Uint(256)
 
     def __init__(self, **kwargs):
-        super().__init__(timestamp=int(time.time()), **kwargs)
+        super().__init__(timestamp=int(time.time_ns()), **kwargs)

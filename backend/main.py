@@ -21,7 +21,7 @@ if module_path not in sys.path:
 import uvicorn
 
 schema = load_schema_from_path("schema.graphql")
-print("Schema=" + schema)
+print("Schema =" + schema)
 executable_schema = make_executable_schema(
     schema,
     [query,
