@@ -112,7 +112,9 @@ contract RentalAgreement is EIP712 {
         if (nonce != _cashierNonces[cashier]) revert("Invalid nonce");
         if (msg.value != value) revert("Invalid value");
         if (deadline > getRentEndTime()) revert("The contract is being in not allowed state");
-//        if (deadline > (_rentStartTime + _rentalPermit.billingPeriodDuration)) revert("The contract is being in not allowed state");
+
+        uint256 requiredBalance = _rentalPermit.rentalRate * (((uint256)(block.timestamp) - (uint256)(_rentStartTime)) / _rentalPermit.billingPeriodDuration + 1);
+        if (address(this).balance < requiredBalance) revert("The contract is being in not allowed state");
 
         _cashierNonces[cashier]++;
         emit PurchasePayment(value);
