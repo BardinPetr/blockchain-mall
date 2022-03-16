@@ -21,7 +21,8 @@ store = {}
 
 def create_message(address):
     global store
-    msg = address.lower() + "@" + str(time_ns())
+    address = address.lower()
+    msg = address + "@" + str(time_ns())
     store[address] = msg
     return msg
 
