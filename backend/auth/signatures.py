@@ -1,14 +1,12 @@
 import os
 from time import time_ns
 
-
 import eth_account
 import jwt
 from eip712_structs import make_domain
 from web3 import Web3
 
 from auth.msgs import AuthMsg
-
 
 LANDLORD_ADDR = os.getenv("LANDLORD_ADDRESS")
 JWTKEY = os.getenv("JWT_KEY", "testkey")
@@ -30,7 +28,9 @@ def create_message(address):
 def restore_signer(address, signature):
     print("IN restore_signer address, signature, store: ", address, signature, store)
     msg = eth_account.messages.encode_defunct(store[address].encode('utf-8'))
-    return w3.eth.account.recover_message(msg, vrs=(int(signature['v'], 16), signature['r'], signature['s']))
+    signer = w3.eth.account.recover_message(msg, vrs=(int(signature['v'], 16), signature['r'], signature['s']))
+    del store[address]
+    return signer
 
 
 def generate_token(address, role):
