@@ -11,6 +11,7 @@ from web3 import Web3
 
 from error.exceptions import AuthenticationFailed, UserIsNotLord, AuthenticationRequired, ValidationError
 from auth.signatures import create_message, restore_signer, generate_token, set_last_token
+from model.storage import add_room
 
 mutation = ObjectType("Mutation")
 
@@ -64,6 +65,8 @@ def resolve_create_room(_, info, room: InputRoom):
 
     if room.area <= 0:
         raise ValidationError("The room area must be greater than zero")
+
+    return add_room(Room(room.internalName, room.area, room.location))
 
 
 @mutation.field("setRoomContractAddress")
