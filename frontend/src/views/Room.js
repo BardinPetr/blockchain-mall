@@ -77,7 +77,7 @@ function Room() {
       <Field k="room__rent-end" v={formatDate(rentEnd)} />
       <Field k="room__billing-period" v={formatDuration(billingPeriod)} />
       <Field k="room__rental-rate" v={toString(rentalRate) + " wei"} />
-      {isError && <p>Error: {error.toString()}</p>}
+      {isError && <p>Error!</p>}
     </>
   );
 }
