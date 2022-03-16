@@ -59,7 +59,7 @@ const MetamaskAuth = () => {
     eth.on('accountsChanged', checkAccounts)
 
     return (
-        <div>
+        <>
             {authenticated ? (
                 <p className="account__address">{account}</p>
             ) : (
@@ -76,7 +76,7 @@ const MetamaskAuth = () => {
                     with before
                 </p>
             )}
-        </div>
+        </>
     );
 }
 
