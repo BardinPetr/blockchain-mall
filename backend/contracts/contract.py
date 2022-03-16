@@ -3,7 +3,7 @@ import json
 from web3 import Web3
 import os
 
-from backend.contracts.contract_wrapper import ContractWrapper
+from contracts.contract_wrapper import ContractWrapper
 
 w3 = Web3(Web3.HTTPProvider(os.getenv("RPC_URL", "https://sokol.poa.network")))
 

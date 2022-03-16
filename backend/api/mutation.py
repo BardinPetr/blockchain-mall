@@ -17,7 +17,7 @@ from model.storage import add_room
 
 from auth.signatures import decode_token
 
-from backend.model.storage import upd_room_data_by_id
+from model.storage import upd_room_data_by_id
 
 mutation = ObjectType("Mutation")
 
@@ -90,12 +90,15 @@ def resolve_set_room_contract_address(_, info, id: int, address: str):
 
 
 @mutation.field("editRoom")
-def resolve_edit_room(_, info, id: int, room: InputRoom):
+def resolve_edit_room(_, info, id: int, room: dict):
     access_token = get_access_token(info)
     if access_token is None:
         raise AuthenticationRequired()
     if access_token['role'] != "landlord":
         raise UserIsNotLord()
+
+    return upd_room_data_by_id(id, Room(room['internalName'], room['area'], room['location']))
+
 
 @mutation.field("removeRoom")
 def resolve_remove_room(_, info, id: int):
@@ -104,6 +107,7 @@ def resolve_remove_room(_, info, id: int):
         raise AuthenticationRequired()
     if access_token['role'] != "landlord":
         raise UserIsNotLord()
+
 
 @mutation.field("setRoomPublicName")
 def resolve_set_room_public_name(_, info, id: int, publicName: str):
