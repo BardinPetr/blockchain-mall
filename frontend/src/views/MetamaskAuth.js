@@ -4,8 +4,6 @@ import {useMutation} from "@apollo/client";
 import {AUTHENTICATE, GET_ACCESS_TOKEN, REQUEST_AUTHENTICATION} from "../gql/mutations";
 import Web3 from "web3";
 
-localStorage.setItem("access_token_cookie", "");
-
 const eth = window.ethereum;
 
 const MetamaskAuth = ({children}) => {
@@ -55,7 +53,9 @@ const MetamaskAuth = ({children}) => {
         await authenticate(acc);
     };
 
-    const checkAccounts = (accounts) => setAccountInvalid(accounts.length > 0 && getLastAccount() !== accounts[0]);
+    const checkAccounts = (accounts) => setAccountInvalid(
+        accounts.length > 0 && getLastAccount() && getLastAccount() !== accounts[0]
+    );
 
     useEffect(() => eth.request({method: "eth_accounts"}).then(checkAccounts), []);
     eth.on('accountsChanged', checkAccounts)
