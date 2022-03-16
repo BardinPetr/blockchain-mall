@@ -15,6 +15,10 @@ from error.exceptions import AuthenticationFailed, UserIsNotLord, Authentication
 from auth.signatures import create_message, restore_signer, generate_token, set_last_token
 from model.storage import add_room
 
+from auth.signatures import decode_token
+
+from backend.model.storage import upd_room_data_by_id
+
 mutation = ObjectType("Mutation")
 
 
@@ -74,6 +78,13 @@ def resolve_set_room_contract_address(_, info, id: int, address: str):
     access_token = get_access_token(info)
     if access_token is None:
         raise AuthenticationRequired()
+    if access_token['role'] != "landlord":
+        raise UserIsNotLord()
+
+    upd_room_data_by_id(id, {
+        'contractAddress': address
+    })
+
 
 
 @mutation.field("editRoom")

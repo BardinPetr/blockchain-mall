@@ -6,6 +6,7 @@ def add_room(room):
     i = str(len(rooms) + 1)
     rooms[i] = {
         'id': i,
+        'contractAddress': ''
     }
     print("IN add_room - room: ", room)
     return room
