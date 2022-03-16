@@ -25,10 +25,10 @@ def resolve_request_authentication(_, info, address: str) -> str:
 @mutation.field("authenticate")
 def resolve_authenticate(_, info, address: str, signedMessage: dict):
     try:
-        address = address.lower()
-        restored_addr = restore_signer(address, signedMessage).lower()
+        address = address
+        restored_addr = restore_signer(address, signedMessage)
         if restored_addr == address:
-            return Authentication(address, address == LANDLORD_ADDR.lower())
+            return Authentication(address, address == LANDLORD_ADDR)
     except BaseException as e:
         print("IN resolve_authenticate" + traceback.format_exc())
         pass
@@ -38,8 +38,7 @@ def resolve_authenticate(_, info, address: str, signedMessage: dict):
 @mutation.field("getAccessToken")
 def resolve_get_access_token(_, info, address: str, signedMessage: dict):
     try:
-        address = address.lower()
-        return generate_token(address, 'landlord' if address == LANDLORD_ADDR.lower() else 'user')
+        return generate_token(address, 'landlord' if address == LANDLORD_ADDR else 'user')
     except BaseException as e:
         print("IN resolve_authenticate" + traceback.format_exc())
         raise resolve_get_access_token()
