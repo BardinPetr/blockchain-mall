@@ -34,7 +34,7 @@ def resolve_authenticate(_, info, address: str, signedMessage: dict):
         pass
     raise AuthenticationFailed()
 
-
+#        bipki
 @mutation.field("getAccessToken")
 def resolve_get_access_token(_, info, address: str, signedMessage: dict):
     try:
