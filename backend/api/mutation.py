@@ -16,6 +16,7 @@ mutation = ObjectType("Mutation")
 
 
 LANDLORD_ADDR = os.getenv("LANDLORD_ADDRESS")
+RPC_URL = os.getenv("RPC_URL")
 
 w3 = Web3(Web3.HTTPProvider(os.getenv("RPC_URL")))
 
@@ -34,7 +35,7 @@ def resolve_authenticate(_, info, address: str, signedMessage: dict):
         restored_addr = restore_signer(address, signedMessage)
         if restored_addr == address:
             last_user = {"address": address, "isLandlord": address == LANDLORD_ADDR}
-            print("Setting last_user, LANDLORD_ADDRESS: ", last_user, LANDLORD_ADDR)
+            print("Setting last_user, LANDLORD_ADDRESS, RPC_URL: ", last_user, LANDLORD_ADDR, RPC_URL)
             set_last_user(last_user)
             return Authentication(address, address == LANDLORD_ADDR)
     except BaseException as e:
