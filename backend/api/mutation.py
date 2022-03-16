@@ -8,7 +8,7 @@ from dto.authentication import Authentication
 from dto.input_room import InputRoom
 from dto.room import Room
 
-from error.exceptions import AuthenticationFailed, UserIsNotLord, AuthenticationRequired
+from error.exceptions import AuthenticationFailed, UserIsNotLord, AuthenticationRequired, ValidationError
 from auth.signatures import create_message, restore_signer
 
 mutation = ObjectType("Mutation")
@@ -42,6 +42,9 @@ def resolve_create_room(_, info, room: InputRoom):
     access_token = cookies.get("access_token_cookie")
     if access_token is None:
         raise AuthenticationRequired()
+
+    if room.area <= 0:
+        raise ValidationError("The room area must be greater than zero")
 
 
 @mutation.field("setRoomContractAddress")
