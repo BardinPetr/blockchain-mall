@@ -111,7 +111,7 @@ contract RentalAgreement is EIP712 {
         if (deadline < block.timestamp) revert("The operation is outdated");
         if (nonce != _cashierNonces[cashier]) revert("Invalid nonce");
         if (msg.value != value) revert("Invalid value");
-        if (block.timestamp > getRentEndTime()) revert("The contract is being in not allowed state");
+        if (deadline > getRentEndTime()) revert("The contract is being in not allowed state");
         // if(block.timestamp > _rentalPermit.deadline) revert("The contract is being in not allowed state");
 
         _cashierNonces[cashier]++;
