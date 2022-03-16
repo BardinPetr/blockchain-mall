@@ -16,4 +16,4 @@ def getContractData(address):
     return contract.getTenant()
 
 
-print(getContractData("0x9d039286e87dA118858f00CB6B15abE8A4C1Fc7e"))
+# print(getContractData("0x9d039286e87dA118858f00CB6B15abE8A4C1Fc7e"))
