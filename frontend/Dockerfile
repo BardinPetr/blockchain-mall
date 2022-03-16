@@ -1,11 +1,4 @@
-FROM node:alpine
-
-WORKDIR /app
-
-COPY package.json ./
-COPY package-lock.json ./
-
-RUN npm install
+FROM registry.gitlab.com/onti-fintech/onti-2022-fintech/fintech2022004/mall/bardinpetr/frontend-base:latest
 
 COPY ./ ./
 
