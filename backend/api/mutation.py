@@ -63,6 +63,9 @@ def resolve_create_room(_, info, room: dict):
     if access_token is None:
         raise AuthenticationRequired()
 
+    if access_token['role'] != "landlord":
+        raise UserIsNotLord()
+
     if room['area'] <= 0:
         raise ValidationError("The room area must be greater than zero")
 
@@ -75,20 +78,21 @@ def resolve_set_room_contract_address(_, info, id: int, address: str):
     if access_token is None:
         raise AuthenticationRequired()
 
-
 @mutation.field("editRoom")
 def resolve_edit_room(_, info, id: int, room: InputRoom):
     access_token = get_access_token(info)
     if access_token is None:
         raise AuthenticationRequired()
-
+    if access_token['role'] != "landlord":
+        raise UserIsNotLord()
 
 @mutation.field("removeRoom")
 def resolve_remove_room(_, info, id: int):
     access_token = get_access_token(info)
     if access_token is None:
         raise AuthenticationRequired()
-
+    if access_token['role'] != "landlord":
+        raise UserIsNotLord()
 
 @mutation.field("setRoomPublicName")
 def resolve_set_room_public_name(_, info, id: int, publicName: str):
