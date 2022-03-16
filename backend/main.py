@@ -12,6 +12,7 @@ from starlette.routing import Route
 from api.mutation import mutation
 from api.query import query
 from error.error_formatter import simple_format_error
+from middleware.cookie_middleware import CookieMiddleware
 
 dotenv.load_dotenv(verbose=True, override=True)
 
@@ -43,6 +44,7 @@ app = Starlette(
     ],
     middleware=[
         Middleware(CORSMiddleware, allow_origins=['*'], allow_methods=("GET", "POST", "OPTIONS")),
+        Middleware(CookieMiddleware)
     ],
 )
 
