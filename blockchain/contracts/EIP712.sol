@@ -68,7 +68,7 @@ contract EIP712 {
         return signer == ecrecover(hashRentalPermit(rp), sign.v, sign.r, sign.s);
     }
 
-    function verifyTicket(address signer, Ticket memory t, Sign memory sign) public view returns (bool) {
-        return signer == ecrecover(hashTicket(t), sign.v, sign.r, sign.s);
+    function getTicketIssuer(Ticket memory t, Sign memory sign) public view returns (address) {
+        return ecrecover(hashTicket(t), sign.v, sign.r, sign.s);
     }
 }

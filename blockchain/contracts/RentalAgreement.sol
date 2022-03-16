@@ -9,6 +9,7 @@ struct Cashier {
 }
 
 contract RentalAgreement is EIP712 {
+    event PurchasePayment(uint256 value);
 
     uint private _roomInternalId;
     address private _landlord;
@@ -73,6 +74,18 @@ contract RentalAgreement is EIP712 {
         _rentalPermit = tmpRP;
     }
 
+    function removeCashier(address cashierAddr) public {
+        if(msg.sender != _rentalPermit.tenant) revert("You are not a tenant");
+        if(_cashierNonces[cashierAddr] == 0) revert("Unknown cashier");
+
+        uint i = 0;
+        for(; i < _cashierAddresses.length; i++) if(_cashierAddresses[i] == cashierAddr) break;
+        _cashierAddresses[i] = _cashierAddresses[_cashierAddresses.length - 1];
+        _cashierAddresses.pop();
+
+        _cashierNonces[cashierAddr] = 0;
+    }
+
     function addCashier(address addr) public {
         if(msg.sender != _rentalPermit.tenant) revert("You are not a tenant");
         if(addr == _landlord) revert("The landlord cannot become a cashier");
@@ -80,17 +93,6 @@ contract RentalAgreement is EIP712 {
 
         _cashierAddresses.push(addr);
         _cashierNonces[addr] = _curCashierNonce++;
-    }
-
-    function removeCashier(address cashierAddr) public {
-        if(msg.sender != _rentalPermit.tenant) revert("You are not a tenant");
-        if(_cashierNonces[cashierAddr] == 0) revert("Unknown cashier");
-
-        _cashierNonces[cashierAddr] = 0;
-        uint i = 0;
-        for(; i < _cashierAddresses.length; i++) if(_cashierAddresses[i] == cashierAddr) break;
-        _cashierAddresses[i] = _cashierAddresses[_cashierAddresses.length - 1];
-        _cashierAddresses.pop();
     }
 
     function getCashierNonce(address cashierAddr) public view returns (uint)  {
@@ -103,6 +105,16 @@ contract RentalAgreement is EIP712 {
 
     function pay(uint deadline, uint nonce, uint value, Sign memory cashierSign) public payable {
         Ticket memory t = Ticket(deadline, nonce, value);
-        // if() revert("");
+        address cashier = getTicketIssuer(t, cashierSign);
+
+        // if(_cashierNonces[cashier] == 0) revert("Unknown cashier");
+        // if(deadline < block.timestamp) revert("The operation is outdated");
+        // if(nonce != _cashierNonces[cashier]) revert("Invalid nonce");
+        if(msg.value != value) revert("Invalid value");
+        // if((deadline > getRentEndTime()) || (block.timestamp > _rentalPermit.deadline))
+            // revert("The contract is being in not allowed state");
+
+        _cashierNonces[cashier]++;
+        emit PurchasePayment(msg.value);
     }
 }
