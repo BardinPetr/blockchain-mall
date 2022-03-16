@@ -3,7 +3,6 @@ import { useParams } from "react-router-dom";
 import { useState } from "react";
 
 import { GET_ROOM, STATUSES } from "../gql/queries";
-import { RENTAL_ARGREEMENT_ABI } from "../abi";
 
 import Field from "./Field";
 
