@@ -2,7 +2,7 @@ import { useQuery } from "@apollo/client";
 import { useParams } from "react-router-dom";
 import { useState } from "react";
 
-import { GET_ROOM } from "../gql/queries";
+import { GET_ROOM, STATUSES } from "../gql/queries";
 import { RENTAL_ARGREEMENT_ABI } from "../abi";
 
 import Field from "./Field";
@@ -31,24 +31,18 @@ function Room() {
     return unixTimeDuration;
   };
 
-  useEffect(async () => {
-    const contract = new web3.eth.Contract(
-      RENTAL_ARGREEMENT_ABI,
-      contractAddress
-    );
-    const STATUSES = [
-      "Unavailable for renting",
-      "Rented",
-      "Available for renting",
-      "Rent ended",
-    ];
-    setStatus(STATUSES[await contract.methods.contractStatus().send()]);
-    setTenant(await contract.methods.getTenant().send());
-    setRentStart(await contract.methods.getRentStartTime().send());
-    setRentEnd(await contract.methods.getRentEndTime().send());
-    setBillingPeriod(await contract.methods.getBillingPeriodDuration().send());
-    setRentalRate(await contract.methods.getRentalRate().send());
-  }, [contractAddress]);
+  // useEffect(async () => {
+  // const contract = new web3.eth.Contract(
+  //   RENTAL_ARGREEMENT_ABI,
+  //   contractAddress
+  // );
+  // setStatus(STATUSES[await contract.methods.contractStatus().send()]);
+  // setTenant(await contract.methods.getTenant().send());
+  // setRentStart(await contract.methods.getRentStartTime().send());
+  // setRentEnd(await contract.methods.getRentEndTime().send());
+  // setBillingPeriod(await contract.methods.getBillingPeriodDuration().send());
+  // setRentalRate(await contract.methods.getRentalRate().send());
+  // }, [contractAddress]);
 
   const { error: isError } = useQuery(GET_ROOM, {
     fetchPolicy: "no-cache",
@@ -61,6 +55,12 @@ function Room() {
       setLocation(data.location);
       setPublicName(data.publicName);
       setContractAddress(data.contractAddress);
+      setStatus(STATUSES[data.status]);
+      setTenant(data.tenantAddress);
+      setRentStart(data.rentStart);
+      setRentEnd(data.rentEnd);
+      setBillingPeriod(data.billingPeriod);
+      setRentalRate(data.rentalRate);
     },
   });
 
