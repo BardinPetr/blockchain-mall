@@ -6,7 +6,7 @@ class Room:
     contractAddress: str
     publicName: str
 
-    def __init__(self, id, internalName, area, location, contractAddress, publicName):
+    def __init__(self, internalName, area, location, contractAddress=None, publicName=None, id=None):
         self.id = id
         self.internalName = internalName
         self.area = area
