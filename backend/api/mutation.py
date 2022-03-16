@@ -1,23 +1,97 @@
-import dotenv
-from ariadne import ObjectType
 import os
+import time
+import traceback
 
+
+from ariadne import ObjectType
+
+from auth.auth import get_access_token
 from dto.authentication import Authentication
+from dto.input_room import InputRoom
+from dto.room import Room
+from web3 import Web3
 
-from backend.web3.signatures import create_message, restore_signer
+from error.exceptions import AuthenticationFailed, UserIsNotLord, AuthenticationRequired, ValidationError
+from auth.signatures import create_message, restore_signer, generate_token, set_last_token
+from model.storage import add_room
 
 mutation = ObjectType("Mutation")
 
-dotenv.load_dotenv(verbose=True, override=True)
+
 LANDLORD_ADDR = os.getenv("LANDLORD_ADDRESS")
+RPC_URL = os.getenv("RPC_URL")
+
+w3 = Web3(Web3.HTTPProvider(os.getenv("RPC_URL")))
 
 
 @mutation.field("requestAuthentication")
 def resolve_request_authentication(_, info, address: str) -> str:
+    address = w3.toChecksumAddress(address)
     return create_message(address)
 
 
 @mutation.field("authenticate")
 def resolve_authenticate(_, info, address: str, signedMessage: dict):
-    addr = restore_signer(address, signedMessage)
-    return Authentication(address, address == LANDLORD_ADDR)
+    address = w3.toChecksumAddress(address)
+
+    try:
+        restored_addr = restore_signer(address, signedMessage)
+        if restored_addr == address:
+            token = generate_token(address, 'landlord' if address == LANDLORD_ADDR else 'user')
+            print("Setting token, LANDLORD_ADDRESS, RPC_URL: ", token, LANDLORD_ADDR, RPC_URL)
+            set_last_token(token)
+            return Authentication(address, address == LANDLORD_ADDR)
+    except BaseException as e:
+        print("IN resolve_authenticate" + traceback.format_exc())
+        pass
+    raise AuthenticationFailed()
+
+
+@mutation.field("getAccessToken")
+def resolve_get_access_token(_, info, address: str):
+    address = w3.toChecksumAddress(address)
+    try:
+        return generate_token(address, 'landlord' if address == LANDLORD_ADDR else 'user')
+    except BaseException as e:
+        print("IN resolve_authenticate" + traceback.format_exc())
+        raise resolve_get_access_token()
+
+
+@mutation.field("createRoom")
+def resolve_create_room(_, info, room: dict):
+    access_token = get_access_token(info)
+    if access_token is None:
+        raise AuthenticationRequired()
+
+    if room['area'] <= 0:
+        raise ValidationError("The room area must be greater than zero")
+
+    return add_room(Room(room['internalName'], room['area'], room['location']))
+
+
+@mutation.field("setRoomContractAddress")
+def resolve_set_room_contract_address(_, info, id: int, address: str):
+    access_token = get_access_token(info)
+    if access_token is None:
+        raise AuthenticationRequired()
+
+
+@mutation.field("editRoom")
+def resolve_edit_room(_, info, id: int, room: InputRoom):
+    access_token = get_access_token(info)
+    if access_token is None:
+        raise AuthenticationRequired()
+
+
+@mutation.field("removeRoom")
+def resolve_remove_room(_, info, id: int):
+    access_token = get_access_token(info)
+    if access_token is None:
+        raise AuthenticationRequired()
+
+
+@mutation.field("setRoomPublicName")
+def resolve_set_room_public_name(_, info, id: int, publicName: str):
+    access_token = get_access_token(info)
+    if access_token is None:
+        raise AuthenticationRequired()
