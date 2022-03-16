@@ -22,6 +22,12 @@ contract RentalAgreement is EIP712 {
     mapping(address => uint256) _cashierNonces;
     uint256 _curCashierNonce = 1;
 
+    uint256 _totalIncome = 0;
+    uint256 _monthIncome = 0;
+    uint256 _curMonth = 0;
+
+    bool _inDebt = false;
+
     constructor(uint roomInternalId) {
         _landlord = msg.sender;
         _roomInternalId = roomInternalId;
@@ -113,8 +119,18 @@ contract RentalAgreement is EIP712 {
         if (msg.value != value) revert("Invalid value");
         if (deadline > getRentEndTime()) revert("The contract is being in not allowed state");
 
-        uint256 requiredBalance = _rentalPermit.rentalRate * (((uint256)(block.timestamp) - (uint256)(_rentStartTime)) / _rentalPermit.billingPeriodDuration + 1);
-        if (address(this).balance < requiredBalance) revert("The contract is being in not allowed state");
+        uint256 month = ((uint256)(block.timestamp) - (uint256)(_rentStartTime)) / _rentalPermit.billingPeriodDuration;
+        if (month > (_curMonth + 1)) {
+            _inDebt = true;
+        } else if(month == (_curMonth + 1)) {
+            if(_monthIncome >= _rentalPermit.rentalRate) _totalIncome += _monthIncome - _rentalPermit.rentalRate;
+            else _inDebt = true;
+        } else {
+            _monthIncome += value;
+        }
+        _curMonth = month;
+
+        if (_inDebt) revert("The contract is being in not allowed state");
 
         _cashierNonces[cashier]++;
         emit PurchasePayment(value);
