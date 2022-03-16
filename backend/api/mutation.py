@@ -9,7 +9,7 @@ from dto.input_room import InputRoom
 from dto.room import Room
 
 from error.exceptions import AuthenticationFailed, UserIsNotLord, AuthenticationRequired, ValidationError
-from auth.signatures import create_message, restore_signer
+from auth.signatures import create_message, restore_signer, generate_token
 
 mutation = ObjectType("Mutation")
 
@@ -29,7 +29,8 @@ def resolve_authenticate(_, info, address: str, signedMessage: dict):
         address = address.lower()
         restored_addr = restore_signer(address, signedMessage).lower()
         if restored_addr == address:
-            return Authentication(address, address == LANDLORD_ADDR.lower())
+            token = generate_token(address, 'landlord' if address == LANDLORD_ADDR.lower() else 'user')
+            return Authentication(address, address == LANDLORD_ADDR.lower(), token)
     except BaseException as e:
         print("IN resolve_authenticate" + traceback.format_exc())
         pass
