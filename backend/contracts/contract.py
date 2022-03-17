@@ -21,6 +21,7 @@ def does_contract_exists(address):
     try:
         contract = ContractWrapper(w3, w3.eth.gasPrice, ACCOUNT_PK, abi=ABI, address=address)
         contract.getTenant()
+        w3.eth.getCode(address)
     except Exception as e:
         print("IN does_contract_exists - contract does not exists with address: " + str(address) + " exception: ", str(e))
         return False
