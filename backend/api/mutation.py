@@ -15,6 +15,10 @@ from error.exceptions import AuthenticationFailed, UserIsNotLord, Authentication
 from auth.signatures import create_message, restore_signer, generate_token, set_last_token
 from model.storage import add_room
 
+from auth.signatures import decode_token
+
+from model.storage import upd_room_data_by_id
+
 mutation = ObjectType("Mutation")
 
 
@@ -63,10 +67,17 @@ def resolve_create_room(_, info, room: dict):
     if access_token is None:
         raise AuthenticationRequired()
 
+    if access_token['role'] != "landlord":
+        raise UserIsNotLord()
+
     if room['area'] <= 0:
         raise ValidationError("The room area must be greater than zero")
 
-    return add_room(Room(room['internalName'], room['area'], room['location']))
+    return add_room({
+        'internalName': room['internalName'],
+        'area': room['area'],
+        'location': room['location']
+    })
 
 
 @mutation.field("setRoomContractAddress")
@@ -74,13 +85,27 @@ def resolve_set_room_contract_address(_, info, id: int, address: str):
     access_token = get_access_token(info)
     if access_token is None:
         raise AuthenticationRequired()
+    if access_token['role'] != "landlord":
+        raise UserIsNotLord()
+
+    upd_room_data_by_id(id, {
+        'contractAddress': address
+    })
 
 
 @mutation.field("editRoom")
-def resolve_edit_room(_, info, id: int, room: InputRoom):
+def resolve_edit_room(_, info, id: int, room: dict):
     access_token = get_access_token(info)
     if access_token is None:
         raise AuthenticationRequired()
+    if access_token['role'] != "landlord":
+        raise UserIsNotLord()
+
+    return upd_room_data_by_id(id, {
+       'internalName': room['internalName'],
+       'area': room['area'],
+       'location': room['location']
+    })
 
 
 @mutation.field("removeRoom")
@@ -88,6 +113,8 @@ def resolve_remove_room(_, info, id: int):
     access_token = get_access_token(info)
     if access_token is None:
         raise AuthenticationRequired()
+    if access_token['role'] != "landlord":
+        raise UserIsNotLord()
 
 
 @mutation.field("setRoomPublicName")

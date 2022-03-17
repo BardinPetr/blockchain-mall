@@ -3,7 +3,7 @@ import json
 from web3 import Web3
 import os
 
-from backend.contracts.contract_wrapper import ContractWrapper
+from contracts.contract_wrapper import ContractWrapper
 
 w3 = Web3(Web3.HTTPProvider(os.getenv("RPC_URL", "https://sokol.poa.network")))
 
@@ -16,4 +16,4 @@ def getContractData(address):
     return contract.getTenant()
 
 
-print(getContractData("0x9d039286e87dA118858f00CB6B15abE8A4C1Fc7e"))
+# print(getContractData("0x9d039286e87dA118858f00CB6B15abE8A4C1Fc7e"))
