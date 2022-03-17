@@ -44,7 +44,7 @@ def resolve_authenticate(_, info, address: str, signedMessage: dict):
         restored_addr = restore_signer(address, signedMessage)
         if restored_addr == address:
             token = generate_token(address, 'landlord' if address == LANDLORD_ADDR else 'tenant')
-            print("*# " + sign + " Setting token, LANDLORD_ADDRESS, RPC_URL: ", token, LANDLORD_ADDR, RPC_URL)
+            print("*# " + str(sign) + " Setting token, LANDLORD_ADDRESS, RPC_URL: ", token, LANDLORD_ADDR, RPC_URL)
             set_last_token(token)
             return Authentication(address, address == LANDLORD_ADDR)
     except BaseException as e:
