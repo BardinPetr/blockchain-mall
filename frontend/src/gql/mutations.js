@@ -52,3 +52,11 @@ export const EDIT_ROOM = gql`
     }
   }
 `;
+
+export const EDIT_PUBLIC_NAME = gql`
+  mutation EditPublicName($id: ID!, $publicName: String!) {
+    setRoomPublicName(id: $id, publicName: $publicName) {
+      publicName
+    }
+  }
+`;
