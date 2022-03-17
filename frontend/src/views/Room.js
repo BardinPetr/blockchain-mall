@@ -125,6 +125,7 @@ function Room() {
         <form className="public-name-edit">
           <Input
             k="public-name-edit__name"
+            value={publicName ? publicName : undefined}
             cb={(e) => setPublicName(e.target.value)}
           />
           <Button
