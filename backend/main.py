@@ -43,7 +43,11 @@ app = Starlette(
         Route('/{full_path:path}', main, methods=["GET", "POST", "OPTIONS"]),
     ],
     middleware=[
-        Middleware(CORSMiddleware, allow_origins=['*'], allow_methods=("GET", "POST", "OPTIONS"), allow_headers=['*'], allow_credentials=True),
+        Middleware(CORSMiddleware, allow_methods=("GET", "POST", "OPTIONS"), allow_headers=['*'], allow_credentials=True,
+                   allow_origins=['http://localhost:81',
+                                  'http://localhost:82',
+                                  'http://localhost:3000',
+                                  'http://0.0.0.0:8089']),
         Middleware(CookieMiddleware)
     ],
 )
