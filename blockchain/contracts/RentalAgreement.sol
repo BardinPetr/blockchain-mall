@@ -17,6 +17,8 @@ contract RentalAgreement is EIP712 {
     mapping(address => uint256) _cashierNonces;
     uint256 _curCashierNonce = 1;
 
+    uint256 _totalTenantIncome = 0;
+
     uint256 _totalIncome = 0;
     uint256 _monthIncome = 0;
     uint256 _curMonth = 0;
@@ -73,6 +75,7 @@ contract RentalAgreement is EIP712 {
         _inRent = true;
         _rentStartTime = block.timestamp;
         _rentalPermit = tmpRP;
+        _totalTenantIncome = rentalRate;
     }
 
     function removeCashier(address cashierAddr) public {
@@ -148,6 +151,7 @@ contract RentalAgreement is EIP712 {
 
     function getTenantProfit() public view returns (uint) {
         uint256 month = getCurMonth();
+        if(_inDebt) return _totalIncome;
         uint256 curRentalRate = (month < (_rentalPermit.billingsCount - 1) ? _rentalPermit.rentalRate : 0);
         return _totalIncome + (_monthIncome >= curRentalRate ? (_monthIncome - curRentalRate) : 0);
     }
