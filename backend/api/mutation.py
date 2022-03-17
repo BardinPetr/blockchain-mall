@@ -11,7 +11,8 @@ from dto.input_room import InputRoom
 from dto.room import Room
 from web3 import Web3
 
-from error.exceptions import AuthenticationFailed, UserIsNotLord, AuthenticationRequired, ValidationError
+from error.exceptions import AuthenticationFailed, UserIsNotLord, AuthenticationRequired, ValidationError, \
+    RoomNotFoundError
 from auth.signatures import create_message, restore_signer, generate_token, set_last_token
 from model.storage import add_room
 
@@ -81,15 +82,15 @@ def resolve_create_room(_, info, room: dict):
 
 
 @mutation.field("setRoomContractAddress")
-def resolve_set_room_contract_address(_, info, id: int, address: str):
+def resolve_set_room_contract_address(_, info, id: int, contractAddress: str):
     access_token = get_access_token(info)
     if access_token is None:
         raise AuthenticationRequired()
     if access_token['role'] != "landlord":
         raise UserIsNotLord()
 
-    upd_room_data_by_id(id, {
-        'contractAddress': address
+    return upd_room_data_by_id(id, {
+        'contractAddress': contractAddress
     })
 
 
