@@ -67,7 +67,6 @@ def resolve_create_room(_, info, room: dict):
     access_token = get_access_token(info)
     if access_token is None:
         raise AuthenticationRequired()
-
     if access_token['role'] != "landlord":
         raise UserIsNotLord()
 
@@ -101,6 +100,9 @@ def resolve_edit_room(_, info, id: int, room: dict):
         raise AuthenticationRequired()
     if access_token['role'] != "landlord":
         raise UserIsNotLord()
+
+    if room['area'] <= 0:
+        raise ValidationError("The room area must be greater than zero")
 
     return upd_room_data_by_id(id, {
        'internalName': room['internalName'],
