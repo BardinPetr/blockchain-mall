@@ -171,7 +171,7 @@ contract RentalAgreement is EIP712 {
         updateIncomes();
         uint256 profit = getTenantProfit();
         if(_totalIncome > 0) {
-            // (bool success, ) = (payable(_rentalPermit.tenant)).call{value:profit}("");
+//             (bool success, ) = (payable(_rentalPermit.tenant)).call{value:profit}("");
             bool success = (payable(_rentalPermit.tenant)).send(profit);
             if (success) _totalIncome = 0;
         }
@@ -182,8 +182,9 @@ contract RentalAgreement is EIP712 {
     }
 
     function withdrawLandlordProfit() public {
+        updateIncomes();
         if(_totalLandlordIncome > 0) {
-            // (bool success, ) = (payable(_landlord)).call{value:_totalLandlordIncome}("");
+//             (bool success, ) = (payable(_landlord)).call{value:_totalLandlordIncome}("");
             bool success = (payable(_landlord)).send(_totalLandlordIncome);
             if (success) _totalLandlordIncome = 0;
         }
