@@ -11,6 +11,8 @@ class CookieMiddleware(BaseHTTPMiddleware):
             cookie = "access_token_cookie=" + get_last_token()
             response.headers['Set-Cookie'] = cookie
             response.headers['Cookie'] = cookie
+            response.headers['Access-Control-Expose-Headers'] = 'Set-cookie'
+            response.headers['Access-Control-Expose-Headers'] = 'set-cookie'
             clear_last_token()
         print("IN CookieMiddleware - response headers:", response.headers)
         return response
