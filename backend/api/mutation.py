@@ -98,7 +98,7 @@ def resolve_set_room_contract_address(_, info, id: int, contractAddress: str = N
     if access_token['role'] != "landlord":
         raise UserIsNotLord()
 
-    if not does_contract_exists(contractAddress):
+    if contractAddress is not None and not does_contract_exists(contractAddress):
         raise ContractNotExistsError()
 
     return upd_room_data_by_id(id, {
