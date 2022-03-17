@@ -113,6 +113,21 @@ contract RentalAgreement is EIP712 {
         return ((uint256)(block.timestamp) - (uint256)(_rentStartTime)) / _rentalPermit.billingPeriodDuration;
     }
 
+    function updateIncomes() private {
+        uint256 month = getCurMonth();
+        if (month > (_curMonth + 1)) {
+            _inDebt = true;
+        } else if(month == (_curMonth + 1)) {
+            if(_monthIncome >= _rentalPermit.rentalRate) {
+                _totalIncome += _monthIncome - _rentalPermit.rentalRate;
+                _monthIncome = 0;
+            } else {
+                _inDebt = true;
+            }
+        }
+        _curMonth = month;
+    }
+
     function pay(uint deadline, uint nonce, uint value, Sign memory cashierSign) public payable {
         Ticket memory t = Ticket(deadline, nonce, value);
         address cashier = getTicketIssuer(t, cashierSign);
@@ -123,22 +138,12 @@ contract RentalAgreement is EIP712 {
         if (msg.value != value) revert("Invalid value");
         if (deadline > getRentEndTime()) revert("The contract is being in not allowed state");
 
-        uint256 month = getCurMonth();
-        if (month > (_curMonth + 1)) {
-            _inDebt = true;
-        } else if(month == (_curMonth + 1)) {
-            if(_monthIncome >= _rentalPermit.rentalRate) {
-                _totalIncome += _monthIncome - _rentalPermit.rentalRate;
-                _monthIncome = value;
-            } else {
-                _inDebt = true;
-            }
-        } else {
-            _monthIncome += value;
-        }
-        _curMonth = month;
+        updateIncomes();
 
-        if (_inDebt) revert("The contract is being in not allowed state");
+        if (_inDebt)
+            revert("The contract is being in not allowed state");
+        else
+            _monthIncome += value;
 
         _cashierNonces[cashier]++;
         emit PurchasePayment(value);
@@ -150,6 +155,7 @@ contract RentalAgreement is EIP712 {
     }
 
     function withdrawTenantProfit() public {
+        updateIncomes();
         uint256 profit = getTenantProfit();
         if(_totalIncome > 0) {
             (bool success, ) = (payable(_rentalPermit.tenant)).call{value:profit}("");
