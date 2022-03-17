@@ -27,9 +27,9 @@ contract RentalAgreement is EIP712 {
     mapping(address => uint256) _cashierNonces;
     uint256 _curCashierNonce = 1;
 
-
     uint256 _totalLandlordIncome = 0;
 
+    uint256 _tenantInput = 0;
     uint256 _totalIncome = 0;
     uint256 _monthIncome = 0;
     bool _inDebt = false;
@@ -160,6 +160,7 @@ contract RentalAgreement is EIP712 {
             revert("The contract is being in not allowed state");
         else
             _monthIncome += value;
+        _tenantInput += value;
 
         _cashierNonces[cashier]++;
         emit PurchasePayment(value);
@@ -189,13 +190,5 @@ contract RentalAgreement is EIP712 {
         return payable(recipient).send(amount);
         // (new Victim()).sacrifice{value : amount}(payable(recipient));
         // reutrn true;
-    }
-
-    function endAgreement() public {
-
-    }
-
-    function endAgreementManually(uint deadline, Sign memory landlordSign, Sign memory tenantSign) public {
-
     }
 }
