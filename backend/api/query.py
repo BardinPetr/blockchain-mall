@@ -29,8 +29,8 @@ def resolve_get_room(_, info, id: int):
     access_token = get_access_token(info)
     if access_token is None:
         raise AuthenticationRequired()
-    if access_token['role'] != "landlord":
-        raise UserIsNotLord()
+    # if access_token['role'] != "landlord":
+    #     raise UserIsNotLord()
 
     room = get_room_by_id(id)
     if room.get('isAvailableForRent') is None:
