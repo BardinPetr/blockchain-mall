@@ -44,7 +44,9 @@ const MetamaskAuth = ({children}) => {
         const gares = await gqlPost(GET_ACCESS_TOKEN, {address: address});
         console.log(gares);
         setAuthCookie(gares.data.token);
-        console.log(decodeAuthCookie());
+        const wx = decodeAuthCookie();
+        console.log(wx);
+        // window.landlord = wx.role === "landlord"
         setAuthenticated(true);
     }
 
