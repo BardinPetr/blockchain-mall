@@ -173,10 +173,7 @@ contract RentalAgreement is EIP712 {
     function withdrawTenantProfit() public {
         updateIncomes();
         uint256 profit = getTenantProfit();
-        if(_totalIncome > 0) {
-            send(_rentalPermit.tenant, profit);
-            _totalIncome = 0;
-        }
+        if(send(_rentalPermit.tenant, profit)) _totalIncome = 0;
     }
 
     function getLandlordProfit() public view  returns (uint) {
@@ -185,14 +182,13 @@ contract RentalAgreement is EIP712 {
 
     function withdrawLandlordProfit() public {
         updateIncomes();
-        if(_totalLandlordIncome > 0) {
-            send(_landlord, _totalLandlordIncome);
-            _totalLandlordIncome = 0;
-        }
+        if(send(_landlord, _totalLandlordIncome)) _totalLandlordIncome = 0;
     }
 
-    function send(address recipient, uint256 amount) private {
-        (new Victim()).sacrifice{value : amount}(payable(recipient));
+    function send(address recipient, uint256 amount) private returns (bool) {
+        return payable(recipient).send(amount);
+        // (new Victim()).sacrifice{value : amount}(payable(recipient));
+        // reutrn true;
     }
 
     function endAgreement() public {
