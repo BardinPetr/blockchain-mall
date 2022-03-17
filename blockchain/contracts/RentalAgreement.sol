@@ -75,7 +75,7 @@ contract RentalAgreement is EIP712 {
         _inRent = true;
         _rentStartTime = block.timestamp;
         _rentalPermit = tmpRP;
-        _totalLandlordIncome = rentalRate;
+        _totalLandlordIncome = msg.value;
     }
 
     function removeCashier(address cashierAddr) public {
