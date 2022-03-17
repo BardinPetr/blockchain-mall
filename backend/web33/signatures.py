@@ -4,7 +4,7 @@ import dotenv
 import os
 from eip712_structs import make_domain, EIP712Struct, Boolean, Uint, Address
 
-from backend.web3.msgs import AuthMsg
+from web33.msgs import AuthMsg
 
 dotenv.load_dotenv(verbose=True, override=True)
 LANDLORD_ADDR = os.getenv("LANDLORD_ADDRESS")

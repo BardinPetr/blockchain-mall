@@ -12,7 +12,7 @@ import App from "./App";
 
 const DEBUG = true;
 const httpLink = createHttpLink({
-  uri: `${DEBUG ? "http://0.0.0.0:8089" : window.location.origin}/graphql`,
+  uri: `${DEBUG ? "http://0.0.0.0:8089" : "http://localhost:82"}/graphql`,
   credentials: "include",
 });
 
