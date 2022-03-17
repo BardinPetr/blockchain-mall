@@ -37,6 +37,7 @@ function CreateRoom() {
         },
     }).then((data) => {
       console.log(data);
+      nav(`/room/${data.data.createRoom.id}`);
     });
   };
 
