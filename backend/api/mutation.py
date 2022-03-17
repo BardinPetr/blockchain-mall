@@ -97,6 +97,9 @@ def resolve_set_room_contract_address(_, info, id: int, contractAddress: str = N
 
 @mutation.field("editRoom")
 def resolve_edit_room(_, info, id: int, room: dict):
+    print("BEBRA")
+    exit(1)
+
     access_token = get_access_token(info)
     print("IN resolve_edit_room - access_token: " + str(access_token))
     if access_token is None:
