@@ -3,9 +3,12 @@ import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 
 import { GET_ROOM, STATUSES } from "../gql/queries";
-import { gqlPost } from "../tools/tools";
+import { EDIT_PUBLIC_NAME } from "../gql/mutations";
+import { gqlPost, isLandlord } from "../tools/tools";
 
+import Button from "./Button";
 import Field from "./Field";
+import Input from "./Input";
 
 function Room() {
   const { id } = useParams();
@@ -23,6 +26,7 @@ function Room() {
   const [rentEnd, setRentEnd] = useState(0);
   const [billingPeriod, setBillingPeriod] = useState(0);
   const [rentalRate, setRentalRate] = useState(0);
+  const [editingPublicName, setEditingPublicName] = useState(false);
 
   const formatDate = (unixTime) => {
     const date = new Date(unixTime);
@@ -87,9 +91,19 @@ function Room() {
       });
   }, []);
 
+  const submitPublicName = async (e) => {
+    e.preventDefault();
+    setEditingPublicName(false);
+    const res = await gqlPost(EDIT_PUBLIC_NAME, { id, publicName });
+    console.log(res);
+  };
+
+  const doAllowRenting = async ()=> {
+    console.log("allowRenting");
+  }
   return (
     <>
-      <Field k="room__name" v={publicName} />
+      {!editingPublicName && <Field k="room__name" v={publicName} />}
       <Field k="room__internal-name" v={internalName} />
       <Field k="room__area" v={area} />
       <Field k="room__location" v={location} />
@@ -104,6 +118,29 @@ function Room() {
         v={rentalRate}
         f={(rentalRate) => rentalRate.toString() + " wei"}
       />
+      {isLandlord() && !editingPublicName && (
+        <>
+        <Button
+          k="room__edit-public-name"
+          onClick={() => setEditingPublicName(true)}
+        />
+          <Button k="room__allow-renting" onClick={doAllowRenting}/>
+        </>
+      )}
+      {editingPublicName && (
+        <form className="public-name-edit">
+          <Input
+            k="public-name-edit__name"
+            value={publicName ? publicName : undefined}
+            cb={(e) => setPublicName(e.target.value)}
+          />
+          <Button
+            type="submit"
+            k="public-name-edit__submit"
+            onClick={submitPublicName}
+          />
+        </form>
+      )}
       {error && <p>Error: {error.toString()}</p>}
     </>
   );

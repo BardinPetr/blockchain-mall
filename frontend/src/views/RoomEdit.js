@@ -28,12 +28,12 @@ function RoomEdit() {
     );
   };
   return (
-    <>
-      {isLandlord && (
+    isLandlord && (
+      <>
         <form className="room-form" onSubmit={submitEditRoom}>
           <Input
             k="room-form__internal-name"
-            cb={(e) => setInternalName(Number(e.target.value))}
+            cb={(e) => setInternalName(e.target.value)}
             type="text"
             value={internalName}
             required
@@ -54,8 +54,8 @@ function RoomEdit() {
           ></Input>
           <Button type="submit" k="room-form__submit" />
         </form>
-      )}
-    </>
+      </>
+    )
   );
 }
 
