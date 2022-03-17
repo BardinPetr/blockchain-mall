@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 
 import { GET_ROOM, STATUSES } from "../gql/queries";
 import { EDIT_PUBLIC_NAME } from "../gql/mutations";
-import { gqlPost } from "../tools/tools";
+import { gqlPost, isLandlord } from "../tools/tools";
 
 import Button from "./Button";
 import Field from "./Field";
@@ -98,6 +98,9 @@ function Room() {
     console.log(res);
   };
 
+  const doAllowRenting = async ()=> {
+    console.log("allowRenting");
+  }
   return (
     <>
       {!editingPublicName && <Field k="room__name" v={publicName} />}
@@ -115,11 +118,14 @@ function Room() {
         v={rentalRate}
         f={(rentalRate) => rentalRate.toString() + " wei"}
       />
-      {!editingPublicName && (
+      {isLandlord() && !editingPublicName && (
+        <>
         <Button
           k="room__edit-public-name"
           onClick={() => setEditingPublicName(true)}
         />
+          <Button k="room__allow-renting" onClick={doAllowRenting}/>
+        </>
       )}
       {editingPublicName && (
         <form className="public-name-edit">
