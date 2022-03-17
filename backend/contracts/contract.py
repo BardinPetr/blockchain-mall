@@ -6,7 +6,8 @@ import os
 
 from contracts.contract_wrapper import ContractWrapper
 
-w3 = Web3(Web3.HTTPProvider(os.getenv("RPC_URL", "https://sokol.poa.network")))
+RPC_URL = os.getenv("RPC_URL", "https://sokol.poa.network")
+w3 = Web3(Web3.HTTPProvider(RPC_URL))
 
 ABI = json.load(open('abi.json', 'r'))
 ACCOUNT_PK = w3.eth.account.create().key.hex()
@@ -23,6 +24,7 @@ def does_contract_exists(address):
         contract.getTenant()
         w3.eth.getCode(address)
     except Exception as e:
+        print("IN does_contract_exists - RPC_URL: ", str(RPC_URL))
         print("IN does_contract_exists - contract does not exists with address: " + str(address) + " exception: ", str(e))
         return False
     print("IN does_contract_exists - contract EXISTS with address: " + str(address))
