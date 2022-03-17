@@ -1,4 +1,4 @@
-from error.exceptions import RoomNotFoundError
+from error.exceptions import RoomNotExistsError
 
 rooms = {}
 sign = 0
@@ -30,7 +30,7 @@ def remove_room(id):
         return room
 
     print("IN remove_room - not found room with id: ", id)
-    raise RoomNotFoundError("Room with such ID not found")
+    raise RoomNotExistsError("Room with such ID not found")
 
 
 def get_room_by_id(id):
@@ -40,7 +40,7 @@ def get_room_by_id(id):
         return rooms[id]
 
     print("IN get_room_by_id - not found room with id: ", id)
-    raise RoomNotFoundError("Room with such ID not found")
+    raise RoomNotExistsError("Room with such ID not found")
 
 
 def upd_room_data_by_id(id, upd):
@@ -51,7 +51,7 @@ def upd_room_data_by_id(id, upd):
         return rooms[id]
 
     print("IN upd_room_data_by_id - not found room with id: ", id)
-    raise RoomNotFoundError("Room with such ID not found")
+    raise RoomNotExistsError("Room with such ID not found")
 
 
 def set_sign(_sign):
