@@ -61,7 +61,7 @@ def resolve_get_access_token(_, info, address: str):
         return token
     except BaseException as e:
         print("IN resolve_authenticate" + traceback.format_exc())
-        raise resolve_get_access_token()
+        raise AuthenticationFailed()
 
 
 @mutation.field("createRoom")
