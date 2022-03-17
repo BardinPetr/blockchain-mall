@@ -1,11 +1,11 @@
-function Field({ k, v }) {
+function Field({ k, v, f }) {
   return (
-    v && (
+    v ? (
       <>
-        <p>{k}</p>
-        <p className={k}>{v}</p>
+        <p>>> {k}</p>
+        <p className={k}>{f? f(v): v}</p>
       </>
-    )
+    ) : null
   );
 }
 

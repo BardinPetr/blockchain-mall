@@ -1,13 +1,16 @@
 import { useQuery } from "@apollo/client";
 import { useParams } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import { GET_ROOM, STATUSES } from "../gql/queries";
+import { gqlPost } from "../tools/tools";
 
 import Field from "./Field";
 
 function Room() {
   const { id } = useParams();
+
+  const [error, setError] = useState(undefined);
 
   const [internalName, setInternalName] = useState("");
   const [area, setArea] = useState(0);
@@ -43,25 +46,46 @@ function Room() {
   // setRentalRate(await contract.methods.getRentalRate().send());
   // }, [contractAddress]);
 
-  const { error: isError } = useQuery(GET_ROOM, {
-    fetchPolicy: "no-cache",
-    variables: {
+  // const { error: isError } = useQuery(GET_ROOM, {
+  //   fetchPolicy: "no-cache",
+  //   variables:     onCompleted: ({ data }) => {
+  //     setInternalName(data.internalName);
+  //     setArea(data.area);
+  //     setLocation(data.location);
+  //     setPublicName(data.publicName);
+  //     setContractAddress(data.contractAddress);
+  //     setStatus(STATUSES[data.status]);
+  //     setTenant(data.tenantAddress);
+  //     setRentStart(data.rentStart);
+  //     setRentEnd(data.rentEnd);
+  //     setBillingPeriod(data.billingPeriod);
+  //     setRentalRate(data.rentalRate);
+  //   },
+  // });
+
+  useEffect(async () => {
+    gqlPost(GET_ROOM, {
       id: id,
-    },
-    onCompleted: ({ data }) => {
-      setInternalName(data.internalName);
-      setArea(data.area);
-      setLocation(data.location);
-      setPublicName(data.publicName);
-      setContractAddress(data.contractAddress);
-      setStatus(STATUSES[data.status]);
-      setTenant(data.tenantAddress);
-      setRentStart(data.rentStart);
-      setRentEnd(data.rentEnd);
-      setBillingPeriod(data.billingPeriod);
-      setRentalRate(data.rentalRate);
-    },
-  });
+    })
+      .then((d) => {
+        const data = d.data.room;
+        console.log(data);
+        setInternalName(data.internalName);
+        setArea(data.area);
+        setLocation(data.location);
+        setPublicName(data.publicName);
+        setContractAddress(data.contractAddress);
+        setStatus(STATUSES[data.status]);
+        setTenant(data.tenantAddress);
+        setRentStart(data.rentStart);
+        setRentEnd(data.rentEnd);
+        setBillingPeriod(data.billingPeriod);
+        setRentalRate(data.rentalRate);
+      })
+      .catch((e) => {
+        setError(e);
+      });
+  }, []);
 
   return (
     <>
@@ -72,11 +96,15 @@ function Room() {
       <Field k="room__status" v={status} />
       <Field k="room__contract-address" v={contractAddress} />
       <Field k="room__tenant" v={tenant} />
-      <Field k="room__rent-start" v={formatDate(rentStart)} />
-      <Field k="room__rent-end" v={formatDate(rentEnd)} />
-      <Field k="room__billing-period" v={formatDuration(billingPeriod)} />
-      <Field k="room__rental-rate" v={toString(rentalRate) + " wei"} />
-      {isError && <p>Error!</p>}
+      <Field k="room__rent-start" v={rentStart} f={formatDate} />
+      <Field k="room__rent-end" v={rentEnd} f={formatDate} />
+      <Field k="room__billing-period" v={billingPeriod} f={formatDuration} />
+      <Field
+        k="room__rental-rate"
+        v={rentalRate}
+        f={(rentalRate) => toString(rentalRate) + "wei"}
+      />
+      {error && <p>Error: {error.toString()}</p>}
     </>
   );
 }
