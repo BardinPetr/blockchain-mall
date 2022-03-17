@@ -1,4 +1,5 @@
 import os
+import time
 from typing import Optional
 
 from ariadne import ObjectType
@@ -28,10 +29,26 @@ def resolve_get_room(_, info, id: int):
     access_token = get_access_token(info)
     if access_token is None:
         raise AuthenticationRequired()
-    if access_token['role'] != "landlord":
-        raise UserIsNotLord()
+    # if access_token['role'] != "landlord":
+    #     raise UserIsNotLord()
 
-    return get_room_by_id(id)
+    room = get_room_by_id(id)
+    if room.get('isAvailableForRent') is None:
+        room['isAvailableForRent'] = False
+    if room.get('status') is None:
+        room['status'] = int(time.time())
+    if room.get('tenant') is None:
+        room['tenant'] = "0xCB0A9b2978d26C1233324a424910B7Db892dB62C"
+    if room.get('rentStart') is None:
+        room['rentStart'] = int(time.time())
+    if room.get('rentEnd') is None:
+        room['rentEnd'] = int(time.time())
+    if room.get('billingPeriod') is None:
+        room['billingPeriod'] = int(time.time() - 9999)
+    if room.get('rentalRate') is None:
+        room['rentalRate'] = 666
+
+    return room
 
 
 @query.field("rooms")
