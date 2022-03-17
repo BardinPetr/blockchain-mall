@@ -182,12 +182,19 @@ contract RentalAgreement is EIP712 {
     }
 
     function getLandlordProfit() public view returns (uint) {
-        return _totalLandlordIncome;
+        uint256 profit = _totalLandlordIncome;
+        uint256 month = getCurMonth();
+        if(month != _curMonth) {
+            uint256 curRentalRate = (month < _rentalPermit.billingsCount ? _rentalPermit.rentalRate : 0);
+            profit += ((_monthIncome >= curRentalRate) ? curRentalRate : _monthIncome);
+        }
+        return profit;
     }
 
     function withdrawLandlordProfit() public {
         updateIncomes();
-        (bool success, ) = (payable(_landlord)).call{value:_totalLandlordIncome}("");
+        uint256 profit = getLandlordProfit();
+        (bool success, ) = (payable(_landlord)).call{value:profit}("");
         if (success) _totalLandlordIncome = 0;
     }
 
