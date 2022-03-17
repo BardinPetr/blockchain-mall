@@ -47,8 +47,7 @@ app = Starlette(
                    allow_origins=['http://localhost:81',
                                   'http://localhost:82',
                                   'http://localhost:3000',
-                                  'http://0.0.0.0:8089'],
-                   access_control_expose_headers=['set-cookie']),
+                                  'http://0.0.0.0:8089']),
         Middleware(CookieMiddleware)
     ],
 )
