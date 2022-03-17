@@ -197,22 +197,6 @@ contract RentalAgreement is EIP712 {
     function endAgreement() public {
 
     }
-
-    function endAgreementManually(uint deadline, Sign memory landlordSign, Sign memory tenantSign) public {
-        if(!_inRent) revert("The contract is being in not allowed state");
-
-        EndConsent memory tmp = EndConsent(deadline);
-        address tAddr = getEndConsentIssuer(tmp, tenantSign);
-        address lAddr = getEndConsentIssuer(tmp, landlordSign);
-
-        if(tAddr != _rentalPermit.tenant) revert("Invalid tenant sign");
-        if(lAddr != _landlord) revert("Invalid landlord sign");
-        if(deadline < block.timestamp) revert("The operation is outdated");
-
-        send(_landlord, _totalLandlordIncome);
-        send(_rentalPermit.tenant, _tenantInput - (_totalLandlordIncome - _rentalPermit.rentalRate));
-    }
-
     // function demoinit(uint ts) public payable {
     //     RentalPermit memory tmpRP = RentalPermit(300, 0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2, 100, 1000, 1);
 
