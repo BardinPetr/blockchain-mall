@@ -14,7 +14,7 @@ from web3 import Web3
 from error.exceptions import AuthenticationFailed, UserIsNotLord, AuthenticationRequired, ValidationError, \
     RoomNotFoundError
 from auth.signatures import create_message, restore_signer, generate_token, set_last_token
-from model.storage import add_room
+from model.storage import add_room, remove_room
 
 from auth.signatures import decode_token
 
@@ -122,6 +122,8 @@ def resolve_remove_room(_, info, id: int):
         raise AuthenticationRequired()
     if access_token['role'] != "landlord":
         raise UserIsNotLord()
+
+    return remove_room(id)
 
 
 @mutation.field("setRoomPublicName")

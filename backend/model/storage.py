@@ -22,9 +22,10 @@ def get_rooms():
 def remove_room(id):
     global rooms
     if id in rooms:
+        room = rooms[id]
         del rooms[id]
-        print("IN remove_room - updated removed room with id: ", id)
-        return
+        print("IN remove_room - removed room: " + str(room) + " with id: ", id)
+        return room
 
     print("IN remove_room - not found room with id: ", id)
     raise RoomNotFoundError("Room with such ID not found")
