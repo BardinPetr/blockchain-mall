@@ -50,4 +50,5 @@ app = Starlette(
 
 if __name__ == "__main__":
     print("Starting...")
+    print("LANDLORD_ADDRESS=" + os.getenv("LANDLORD_ADDRESS"))
     uvicorn.run("main:app", host="0.0.0.0", port=int(os.getenv("PORT", "81")))
