@@ -22,8 +22,8 @@ export const setAccount = (account) => localStorage.setItem("account", account);
 export const setAuthCookie = (jwt) => Cookies.set("access_token_cookie", jwt);
 export const getAuthCookie = () => Cookies.get("access_token_cookie");
 export const decodeAuthCookie = () => {
-  console.log(getAuthCookie());
-  decode(getAuthCookie());
+  console.log("decodeAuthCookie cookie", getAuthCookie());
+  return decode(getAuthCookie());
 };
 
 const DEBUG = true;
@@ -32,7 +32,7 @@ export const BASE_URL = `${
 }/graphql`;
 
 export async function gqlPost(query, variables) {
-  console.log(getAuthCookie());
+  console.log("gqlPost cookie", getAuthCookie());
   const response = await axios.post(
     BASE_URL,
     {
@@ -40,6 +40,7 @@ export async function gqlPost(query, variables) {
       variables: variables,
     },
     {
+      withCredentials: true,
       headers: {
         authorization: getAuthCookie(),
       },

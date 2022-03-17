@@ -27,9 +27,9 @@ contract RentalAgreement is EIP712 {
     mapping(address => uint256) _cashierNonces;
     uint256 _curCashierNonce = 1;
 
-
     uint256 _totalLandlordIncome = 0;
 
+    uint256 _tenantInput = 0;
     uint256 _totalIncome = 0;
     uint256 _monthIncome = 0;
     bool _inDebt = false;
@@ -123,21 +123,17 @@ contract RentalAgreement is EIP712 {
         return ((uint256)(block.timestamp) - (uint256)(_rentStartTime)) / _rentalPermit.billingPeriodDuration;
     }
 
+    // function updateIncomes(uint256 ts) private {
     function updateIncomes() private {
         uint256 month = getCurMonth();
+        // uint256 month = ((uint256)(ts) - (uint256)(_rentStartTime)) / _rentalPermit.billingPeriodDuration;
         if (month > (_curMonth + 1)) {
             _inDebt = true;
         } else if(month == (_curMonth + 1)) {
             if(_monthIncome >= _rentalPermit.rentalRate) {
-                if(month == (_rentalPermit.billingsCount - 1)) {
-                    _totalIncome += _monthIncome;
-                } else {
-                    _totalIncome += _monthIncome - _rentalPermit.rentalRate;
-                    _totalLandlordIncome += _rentalPermit.rentalRate;
-                }
+                _totalIncome += _totalIncome - (month < (_rentalPermit.billingsCount - 1) ? _rentalPermit.rentalRate : 0);
             } else {
                 _inDebt = true;
-                _totalLandlordIncome += _monthIncome;
             }
             _monthIncome = 0;
         }
@@ -158,22 +154,29 @@ contract RentalAgreement is EIP712 {
 
         if (_inDebt)
             revert("The contract is being in not allowed state");
-        else
-            _monthIncome += value;
+
+        _monthIncome += value;
+        _tenantInput += value;
 
         _cashierNonces[cashier]++;
         emit PurchasePayment(value);
     }
 
     function getTenantProfit() public view returns (uint) {
-        bool isLast = getCurMonth() == (_rentalPermit.billingsCount - 1);
-        return _totalIncome + (_monthIncome > _rentalPermit.rentalRate ? (_monthIncome - (isLast ? 0 : _rentalPermit.rentalRate)) : 0);
+        // bool isLast = getCurMonth() == (_rentalPermit.billingsCount - 1);
+        return _totalIncome +  (_monthIncome > _rentalPermit.rentalRate ? (_monthIncome - _rentalPermit.rentalRate) : 0);
+        // (_monthIncome > _rentalPermit.rentalRate ? (_monthIncome - (isLast ? 0 : _rentalPermit.rentalRate)) : 0);
     }
 
     function withdrawTenantProfit() public {
+    // function withdrawTenantProfit(uint256 ts) public {
+        // updateIncomes(ts);
         updateIncomes();
         uint256 profit = getTenantProfit();
-        if(send(_rentalPermit.tenant, profit)) _totalIncome = 0;
+        if(profit > 0 && send(_rentalPermit.tenant, profit)) {
+            _monthIncome = (_monthIncome > _rentalPermit.rentalRate ? _rentalPermit.rentalRate : _monthIncome);
+            _totalIncome = 0;
+        }
     }
 
     function getLandlordProfit() public view  returns (uint) {
@@ -194,8 +197,22 @@ contract RentalAgreement is EIP712 {
     function endAgreement() public {
 
     }
+    // function demoinit(uint ts) public payable {
+    //     RentalPermit memory tmpRP = RentalPermit(300, 0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2, 100, 1000, 1);
 
-    function endAgreementManually(uint deadline, Sign memory landlordSign, Sign memory tenantSign) public {
+    //     _inRent = true;
+    //     _rentStartTime = ts;
+    //     _rentalPermit = tmpRP;
+    //     _totalLandlordIncome = tmpRP.rentalRate;
+    // }
 
-    }
+    // function demopay(uint256 ts) public payable {
+    //     updateIncomes(ts);
+    //     if (_inDebt)
+    //         revert("The contract is being in not allowed state");
+
+    //     _monthIncome += msg.value;
+    //     _tenantInput += msg.value;
+    // }
+
 }

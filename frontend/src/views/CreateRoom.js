@@ -1,7 +1,7 @@
 import { useMutation } from "@apollo/client";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CREATE_ROOM } from "../gql/mutations";
+import { CREATE_ROOM, GET_ACCESS_TOKEN } from "../gql/mutations";
 
 import { gqlPost } from "../tools/tools"
 
@@ -37,7 +37,7 @@ function CreateRoom() {
         },
     }).then((data) => {
       console.log(data);
-      // nav(`/room/${createRoom.id}`);
+      nav(`/room/${data.data.createRoom.id}`);
     });
   };
 

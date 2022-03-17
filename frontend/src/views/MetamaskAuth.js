@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {decodeAuthCookie, getLastAccount, parseSignature, setAuthCookie, setLastAccount} from "../tools/tools";
+import {decodeAuthCookie, getLastAccount, parseSignature, setAuthCookie, setLastAccount, gqlPost} from "../tools/tools";
 import {useMutation} from "@apollo/client";
 import {AUTHENTICATE, GET_ACCESS_TOKEN, REQUEST_AUTHENTICATION} from "../gql/mutations";
 import Web3 from "web3";
@@ -36,12 +36,14 @@ const MetamaskAuth = ({children}) => {
 
         const rsv = parseSignature(sign);
 
-        await serverAuth({
-            variables: {
+        const ares = await gqlPost(AUTHENTICATE, {
                 address,
                 ...rsv
-            }
-        })
+        });
+        console.log(ares);
+        const gares = await gqlPost(GET_ACCESS_TOKEN, {address: address});
+        console.log(gares);
+        setAuthCookie(gares.data.token);
         console.log(decodeAuthCookie());
         setAuthenticated(true);
     }
