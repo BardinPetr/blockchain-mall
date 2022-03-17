@@ -4,9 +4,10 @@ import traceback
 from web3 import Web3
 import os
 
-from contract_wrapper import ContractWrapper
 
 from backend.dto.contractinfo import ContractInfo
+from contracts.contract_wrapper import ContractWrapper
+from error.exceptions import ContractNotExistsError
 
 RPC_URL = os.getenv("RPC_URL", "https://sokol.poa.network")
 w3 = Web3(Web3.HTTPProvider(RPC_URL))
@@ -19,21 +20,25 @@ def initContract(address):
     return ContractWrapper(w3, w3.eth.gasPrice, ACCOUNT_PK, abi=ABI, address=address)
 
 
-def getContractInfo(id, address) -> ContractInfo:
+def getContractInfo(address) -> ContractInfo:
+    if address is None:
+        raise ContractNotExistsError()
+
     contract = initContract(address)
     return ContractInfo(
-        id,
         address,
         contract.getLandlord(),
         contract.getTenant(),
         contract.getRentalRate(),
         contract.getBillingPeriodDuration(),
-        contract.getBillingsCount()
+        contract.getBillingsCount(),
+        contract.getStatus()
     )
 
 
 def does_contract_exists(address):
     try:
+        address = w3.toChecksumAddress(address)
         contract = ContractWrapper(w3, w3.eth.gasPrice, ACCOUNT_PK, abi=ABI, address=address)
         contract.getTenant()
         w3.eth.getCode(address)

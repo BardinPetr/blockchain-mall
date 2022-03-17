@@ -1,8 +1,21 @@
 type Query {
   authentication: Authentication
-  rooms: [Room!]!
+  rooms(tenantAddress: String): [Room!]!
   room(id: ID!): Room!
+  getContractInfo(id: ID!): ContractInfo
 }
+
+type ContractInfo {
+  id: ID
+  contractAddress: String
+  landlord: String
+  tenant: String
+  rentalRate: Int
+  billingPeriodDuration: Int
+  billingsCount: Int
+
+}
+
 type Mutation {
   requestAuthentication(address: String!): String!
   authenticate(

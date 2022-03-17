@@ -1,25 +1,21 @@
 import os
-import time
 import traceback
 
 from ariadne import ObjectType
-
-from auth.auth import get_access_token
-import contracts.contract
-from contracts.contract import does_contract_exists
-from dto.authentication import Authentication
-from dto.input_room import InputRoom
-from dto.room import Room
+from graphql import GraphQLError
 from web3 import Web3
 
-from error.exceptions import AuthenticationFailed, UserIsNotLord, AuthenticationRequired, ValidationError, \
-    RoomNotExistsError, ContractNotExistsError
+from auth.auth import get_access_token
 from auth.signatures import create_message, restore_signer, generate_token, set_last_token
-from model.storage import add_room, remove_room, get_sign, set_sign, get_sign1, set_sign1
-
-from auth.signatures import decode_token
-
+from contracts.contract import does_contract_exists
+from dto.authentication import Authentication
+from error.exceptions import AuthenticationFailed, UserIsNotLord, AuthenticationRequired, ValidationError, \
+    ContractNotExistsError
+from model.storage import add_room, remove_room, get_sign, set_sign, get_sign1, set_sign1, get_room_by_id
 from model.storage import upd_room_data_by_id
+import contracts.contract
+from contracts.contract import getContractInfo
+
 
 mutation = ObjectType("Mutation")
 
@@ -148,6 +144,16 @@ def resolve_set_room_public_name(_, info, id: int, publicName: str = None):
 
     if access_token is None:
         raise AuthenticationRequired()
+
+    room = get_room_by_id(id)
+    contractAddress = room.get('contractAddress')
+
+    if contractAddress is None:
+        raise GraphQLError("This room is not rented by you")
+
+    contractInfo = getContractInfo(room.get('contractAddress'))
+    if not contractInfo.isRentEnded() or contractInfo.tenant != access_token.get("address"):
+        raise GraphQLError("This room is not rented by you")
 
     return upd_room_data_by_id(id, {
         'publicName': publicName

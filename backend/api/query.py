@@ -57,10 +57,24 @@ def resolve_get_rooms(_, info):
     access_token = get_access_token(info)
     if access_token is None:
         raise AuthenticationRequired()
-    if access_token['role'] != "landlord":
-        raise UserIsNotLord()
 
-    return get_rooms()
+    if access_token['role'] == "landlord":
+        return get_rooms()
+
+    tenantAddress = access_token.get('tenantAddress')
+    rooms = list(get_rooms())
+    rooms_if_tenant = []
+    rooms_if_not_tenant = []
+    for room in rooms:
+        contractAddress = room.get('contractAddress')
+        contractInfo = getContractInfo(room.get('contractAddress'))
+        if not contractInfo.isRentEnded():
+            if contractAddress is None or contractInfo.tenant != tenantAddress:
+                rooms_if_not_tenant.append(room)
+            else:
+                rooms_if_tenant.append(room)
+
+    return rooms
 
 
 @query.field("getContractInfo")
