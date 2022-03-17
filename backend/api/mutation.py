@@ -56,7 +56,9 @@ def resolve_authenticate(_, info, address: str, signedMessage: dict):
 def resolve_get_access_token(_, info, address: str):
     address = w3.toChecksumAddress(address)
     try:
-        return generate_token(address, 'landlord' if address == LANDLORD_ADDR else 'tenant')
+        token = generate_token(address, 'landlord' if address == LANDLORD_ADDR else 'tenant')
+        print("IN resolve_get_access_token - new access_token, address, LANDLORD_ADDRESS, address == LANDLORD_ADDR: " + str(token), address, str(address == LANDLORD_ADDR))
+        return token
     except BaseException as e:
         print("IN resolve_authenticate" + traceback.format_exc())
         raise resolve_get_access_token()
