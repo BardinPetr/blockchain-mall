@@ -28,6 +28,16 @@ export const GET_ROOM = gql`
   }
 `;
 
+export const GET_ROOM_FOR_EDIT = gql`
+  query ($id: ID!) {
+    room(id: $id) {
+      internalName
+      area
+      location
+    }
+  }
+`;
+
 export const GET_TENANT_ROOMS = gql`
   query ($address: String) {
     rooms(tenantAddress: $address) {

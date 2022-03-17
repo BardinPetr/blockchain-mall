@@ -14,7 +14,7 @@ class ContractWrapper:
         > методы определенные как bT возвращают рецепт отправленной транзакции
 
         Args:
-            w3 (Web3): экземпляр web3 для общения с блокчеином.
+            w3 (Web3): экземпляр web33 для общения с блокчеином.
             **kwargs (type): парамтры как для eth.contract().
         """
         user_acc = to_address(user_pk)

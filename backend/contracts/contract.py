@@ -5,7 +5,7 @@ from web3 import Web3
 import os
 
 
-from backend.dto.contractinfo import ContractInfo
+from dto.contractinfo import ContractInfo
 from contracts.contract_wrapper import ContractWrapper
 from error.exceptions import ContractNotExistsError
 

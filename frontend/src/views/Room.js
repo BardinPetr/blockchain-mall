@@ -102,7 +102,7 @@ function Room() {
       <Field
         k="room__rental-rate"
         v={rentalRate}
-        f={(rentalRate) => toString(rentalRate) + "wei"}
+        f={(rentalRate) => rentalRate.toString() + " wei"}
       />
       {error && <p>Error: {error.toString()}</p>}
     </>

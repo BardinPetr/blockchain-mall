@@ -36,3 +36,19 @@ export const CREATE_ROOM = gql`
     }
   }
 `;
+
+export const EDIT_ROOM = gql`
+  mutation EditRoom(
+    $id: ID!
+    $internalName: String!
+    $area: Float!
+    $location: String!
+  ) {
+    editRoom(
+      id: $id
+      room: { internalName: $internalName, area: $area, location: $location }
+    ) {
+      id
+    }
+  }
+`;
