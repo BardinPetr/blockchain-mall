@@ -30,6 +30,13 @@ contract RentalAgreement is EIP712 {
         _roomInternalId = roomInternalId;
     }
 
+    function contractStatus() public view returns(uint) {
+        if (!_inRent) return 2;
+        if (_inDebt) return 0;
+        if (block.timestamp >= getRentEndTime()) return 3;
+        return 1;
+    }
+
     function getRoomInternalId() public view returns (uint) {
         return _roomInternalId;
     }
@@ -48,6 +55,10 @@ contract RentalAgreement is EIP712 {
 
     function getBillingPeriodDuration() public view returns (uint) {
         return _rentalPermit.billingPeriodDuration;
+    }
+
+    function getBillingsCount() public view returns (uint) {
+        return _rentalPermit.billingsCount;
     }
 
     function getRentStartTime() public view returns (uint) {
@@ -202,6 +213,25 @@ contract RentalAgreement is EIP712 {
         if (success) {
             _totalLandlordIncome = 0;
         }
+    }
+
+    function endAgreementManually(uint deadline, Sign memory landlordSign, Sign memory tenantSign) public {
+        if(!_inRent) revert("The contract is being in not allowed state");
+
+        EndConsent memory tmp = EndConsent(deadline);
+        address tAddr = getEndConsentIssuer(tmp, tenantSign);
+        address lAddr = getEndConsentIssuer(tmp, landlordSign);
+
+        if(tAddr != _rentalPermit.tenant) revert("Invalid tenant sign");
+        if(lAddr != _landlord) revert("Invalid landlord sign");
+        if(deadline < block.timestamp) revert("The operation is outdated");
+
+        withdrawLandlordProfit();
+        selfdestruct(payable(_rentalPermit.tenant));
+    }
+
+    function endAgreement() public {
+
     }
 
     // function demoinit(uint ts) public payable {

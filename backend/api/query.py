@@ -6,8 +6,11 @@ from ariadne import ObjectType
 
 from auth.auth import get_access_token
 from dto.authentication import Authentication
+from dto.contractinfo import ContractInfo
 from error.exceptions import AuthenticationRequired, UserIsNotLord
 from model.storage import get_room_by_id, get_rooms
+
+from contracts.contract import getContractInfo
 
 query = ObjectType("Query")
 
@@ -58,3 +61,14 @@ def resolve_get_rooms(_, info):
         raise UserIsNotLord()
 
     return get_rooms()
+
+
+@query.field("getContractInfo")
+def resolve_get_contract(_, info, id: int) -> ContractInfo:
+    access_token = get_access_token(info)
+    if access_token is None:
+        raise AuthenticationRequired()
+
+    addr = get_room_by_id(id)['contractAddress']
+    return getContractInfo(id, addr)
+
