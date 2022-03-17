@@ -43,11 +43,12 @@ app = Starlette(
         Route('/{full_path:path}', main, methods=["GET", "POST", "OPTIONS"]),
     ],
     middleware=[
-        Middleware(CORSMiddleware, allow_origins=['*'], allow_methods=("GET", "POST", "OPTIONS")),
+        Middleware(CORSMiddleware, allow_origins=['*'], allow_methods=("GET", "POST", "OPTIONS"), allow_headers=['*'], allow_credentials=True),
         Middleware(CookieMiddleware)
     ],
 )
 
 if __name__ == "__main__":
     print("Starting...")
+    print("LANDLORD_ADDRESS=" + str(os.getenv("LANDLORD_ADDRESS")))
     uvicorn.run("main:app", host="0.0.0.0", port=int(os.getenv("PORT", "81")))
