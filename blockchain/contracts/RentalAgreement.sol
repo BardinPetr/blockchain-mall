@@ -3,10 +3,13 @@ pragma solidity ^0.8.11;
 
 import "./EIP712.sol";
 
-    struct Cashier {
-        bool valid;
-        uint256 nonce;
+contract Victim {
+    constructor () {}
+
+    function sacrifice(address reciever) external payable {
+        selfdestruct(payable(reciever));
     }
+}
 
 contract RentalAgreement is EIP712 {
     event PurchasePayment(uint amount);
@@ -171,9 +174,8 @@ contract RentalAgreement is EIP712 {
         updateIncomes();
         uint256 profit = getTenantProfit();
         if(_totalIncome > 0) {
-//             (bool success, ) = (payable(_rentalPermit.tenant)).call{value:profit}("");
-            bool success = (payable(_rentalPermit.tenant)).send(profit);
-            if (success) _totalIncome = 0;
+            send(_rentalPermit.tenant, profit);
+            _totalIncome = 0;
         }
     }
 
@@ -184,10 +186,13 @@ contract RentalAgreement is EIP712 {
     function withdrawLandlordProfit() public {
         updateIncomes();
         if(_totalLandlordIncome > 0) {
-//             (bool success, ) = (payable(_landlord)).call{value:_totalLandlordIncome}("");
-            bool success = (payable(_landlord)).send(_totalLandlordIncome);
-            if (success) _totalLandlordIncome = 0;
+            send(_landlord, _totalLandlordIncome);
+            _totalLandlordIncome = 0;
         }
+    }
+
+    function send(address recipient, uint256 amount) private {
+        (new Victim()).sacrifice{value : amount}(payable(recipient));
     }
 
     function endAgreement() public {
