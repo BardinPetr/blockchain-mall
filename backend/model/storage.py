@@ -18,7 +18,7 @@ def add_room(room):
 def get_rooms():
     global rooms
     print("IN get_rooms - rooms: ", str(rooms))
-    return list(rooms.items())
+    return list(rooms.values())
 
 
 def remove_room(id):
