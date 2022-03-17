@@ -73,7 +73,11 @@ def resolve_create_room(_, info, room: dict):
     if room['area'] <= 0:
         raise ValidationError("The room area must be greater than zero")
 
-    return add_room(Room(room['internalName'], room['area'], room['location']))
+    return add_room({
+        'internalName': room['internalName'],
+        'area': room['area'],
+        'location': room['location']
+    })
 
 
 @mutation.field("setRoomContractAddress")
@@ -97,7 +101,11 @@ def resolve_edit_room(_, info, id: int, room: dict):
     if access_token['role'] != "landlord":
         raise UserIsNotLord()
 
-    return upd_room_data_by_id(id, Room(room['internalName'], room['area'], room['location']))
+    return upd_room_data_by_id(id, {
+       'internalName': room['internalName'],
+       'area': room['area'],
+       'location': room['location']
+    })
 
 
 @mutation.field("removeRoom")
