@@ -16,3 +16,8 @@ class UserIsNotLord(Exception):
 class ValidationError(Exception):
     def __init__(self, message):
         super().__init__(message)
+
+
+class RoomNotFoundError(Exception):
+    def __init__(self, message):
+        super().__init__(message)
