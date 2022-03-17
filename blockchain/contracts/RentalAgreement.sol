@@ -200,7 +200,6 @@ contract RentalAgreement is EIP712 {
         uint256 profit = getLandlordProfit();
         (bool success, ) = (payable(_landlord)).call{value:profit}("");
         if (success) {
-            _monthIncome -= profit - _totalLandlordIncome;
             _totalLandlordIncome = 0;
         }
     }
