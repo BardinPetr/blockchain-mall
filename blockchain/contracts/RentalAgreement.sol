@@ -31,9 +31,9 @@ contract RentalAgreement is EIP712 {
     }
 
     function contractStatus() public view returns(uint) {
+        if (block.timestamp >= getRentEndTime()) return 3;
         if (!_inRent) return 2;
         if (_inDebt) return 0;
-        if (block.timestamp >= getRentEndTime()) return 3;
         return 1;
     }
 

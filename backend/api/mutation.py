@@ -16,6 +16,7 @@ from model.storage import upd_room_data_by_id
 import contracts.contract
 from contracts.contract import getContractInfo
 
+import flask
 
 mutation = ObjectType("Mutation")
 
@@ -43,7 +44,7 @@ def resolve_authenticate(_, info, address: str, signedMessage: dict):
         if restored_addr == address:
             token = generate_token(address, 'landlord' if address == LANDLORD_ADDR else 'tenant')
             print("*# " + str(sign) + " Setting token, LANDLORD_ADDRESS, RPC_URL: ", token, LANDLORD_ADDR, RPC_URL)
-            set_last_token(token)
+            flask.session['set_token'] = token
             return Authentication(address, address == LANDLORD_ADDR)
     except BaseException as e:
         print("IN resolve_authenticate" + traceback.format_exc())
