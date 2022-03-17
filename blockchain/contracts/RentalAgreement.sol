@@ -135,4 +135,15 @@ contract RentalAgreement is EIP712 {
         _cashierNonces[cashier]++;
         emit PurchasePayment(value);
     }
+
+    function getTenantProfit() public view returns (uint) {
+        return _totalIncome + (_monthIncome > _rentalPermit.rentalRate ? (_monthIncome - _rentalPermit.rentalRate) : 0);
+    }
+
+    function withdrawTenantProfit() public {
+        if(_totalIncome > 0) {
+            (bool success, ) = (payable(_rentalPermit.tenant)).call{value:_totalIncome}("");
+            if (success) _totalIncome = 0;
+        }
+    }
 }
