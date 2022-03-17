@@ -1,5 +1,6 @@
 import os
 import traceback
+from datetime import datetime
 
 from ariadne import ObjectType
 from graphql import GraphQLError
@@ -10,8 +11,8 @@ from auth.signatures import create_message, restore_signer, generate_token, set_
 from contracts.contract import does_contract_exists
 from dto.authentication import Authentication
 from error.exceptions import AuthenticationFailed, UserIsNotLord, AuthenticationRequired, ValidationError, \
-    ContractNotExistsError
-from model.storage import add_room, remove_room, get_sign, set_sign, get_sign1, set_sign1, get_room_by_id
+    ContractNotExistsError, UserIsNotCashier
+from model.storage import add_room, remove_room, get_sign, set_sign, get_sign1, set_sign1, get_room_by_id, add_ticket
 from model.storage import upd_room_data_by_id
 import contracts.contract
 from contracts.contract import getContractInfo
@@ -89,7 +90,7 @@ def resolve_create_room(_, info, room: dict):
 def resolve_set_room_contract_address(_, info, id: int, contractAddress: str = None):
     access_token = get_access_token(info)
     print("IN resolve_set_room_contract_address - access_token, headers: ", access_token,
-          info.context['request'].headers)
+          info.context.headers)
     if access_token is None:
         raise AuthenticationRequired()
     if access_token['role'] != "landlord":
@@ -158,4 +159,79 @@ def resolve_set_room_public_name(_, info, id: int, publicName: str = None):
 
     return upd_room_data_by_id(id, {
         'publicName': publicName
+    })
+
+
+def validate_nonce(nonce):  # TODO: !!!
+    try:
+        nonce_value = nonce['value']
+
+    except BaseException as e:
+        raise ValidationError("Invalid nonce")
+
+
+def validate_value(value):  # TODO: !!!
+    try:
+        wei = value['wei']
+        if not wei.isdigit():
+            raise ValidationError("Value must be an integer")
+        wei = int(wei)
+        if wei <= 0:
+            raise ValidationError("Value must be greater than zero")
+    except BaseException as e:
+        raise ValidationError("Value must be an integer")
+
+
+def validate_deadline(deadline):  # TODO: !!! SEE AC-110-02 POINT 7
+    try:
+        deadline_datetime_raw = deadline['datetime']
+        deadline_datetime = datetime.fromisoformat(deadline_datetime_raw[:-1] + '+00:00')
+    except BaseException as e:
+        raise ValidationError("Invalid deadline date format")
+    print(deadline_datetime)
+
+
+def validate_cashier_signature(address, cashier_signature):  # TODO: !!!
+    try:
+        signature = cashier_signature['signature']
+        signer_address = restore_signer(address, signature)
+        # TODO
+        return signer_address
+    except BaseException as e:
+        raise ValidationError("Invalid cashier signature")
+
+
+@mutation.field("createTicket")  # TODO: !!! SEE AC-110-02
+def resolve_create_ticket(_, info,
+                          ticket: dict):  # Ticket: room(id), nonce: value, value: wei, deadline(datetime), cashierSignature: v, r, s
+    access_token = get_access_token(info)
+    print("IN resolve_create_ticket - access_token: " + str(access_token))
+    if access_token is None:
+        raise AuthenticationRequired()
+
+    address = access_token.get("address")
+    if access_token['role'] == "landlord":
+        raise UserIsNotCashier()
+    # Here should be authorization check for Cashier role
+
+    room_id = ticket.get('room')
+    nonce = ticket.get('nonce')
+    value = ticket.get('value')
+    deadline = ticket.get('deadline')
+    cashier_signature = ticket.get('cashier_signature')
+
+    room = get_room_by_id(room_id)  # check if room exists
+    validate_nonce(nonce)
+    validate_value(value)
+    validate_deadline(deadline)
+    signer_address = validate_cashier_signature(address, cashier_signature)
+    if room.get('contractAddress') is None:
+        raise ValidationError("Room does not have a contract")
+
+    return add_ticket({
+        'room': room_id,
+        'nonce': {'value': nonce['value']},
+        'value': {'wei': value['wei']},
+        'deadline': {'datetime': deadline['datetime']},
+        'cashierSignature': {'signature': cashier_signature},
     })

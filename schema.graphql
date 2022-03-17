@@ -3,6 +3,9 @@ type Query {
   rooms(tenantAddress: String): [Room!]!
   room(id: ID!): Room!
   getContractInfo(id: ID!): ContractInfo
+  getRpcUrl: String
+
+  ticket(id: ID!): Ticket!
 }
 
 type ContractInfo {
@@ -30,6 +33,8 @@ type Mutation {
   setRoomContractAddress(id: ID!, contractAddress: String): Room!
   setRoomPublicName(id: ID!, publicName: String): Room!
   removeRoom(id: ID!): Room!
+
+  createTicket(ticket: InputTicket!): Ticket!
 }
 # Authentication
 type Authentication {
@@ -58,8 +63,53 @@ input InputRoom {
   area: Float!
   location: String!
 }
+type Signature {
+v: String!
+r: String!
+s: String!
+}
 input InputSignature {
-  v: String!
-  r: String!
-  s: String!
+v: String!
+r: String!
+s: String!
+}
+
+# Tickets
+type Ticket {
+id: ID!
+room: Room!
+value: Wei!
+deadline: Datetime!
+nonce: Nonce!
+cashierSignature: Signature!
+}
+input InputTicket {
+room: ID!
+nonce: InputNonce!
+value: InputWei!
+deadline: InputDatetime!
+cashierSignature: InputSignature!
+}
+## Wei
+type Wei {
+wei: String!
+}
+input InputWei {
+wei: String!
+}
+## Datetime
+##
+## In ISO 8601 format, e.g. `2022-03-15T06:00:00.000Z`
+type Datetime {
+datetime: String!
+}
+input InputDatetime {
+datetime: String!
+}
+## Nonce
+type Nonce {
+value: String!
+}
+input InputNonce {
+value: String!
 }

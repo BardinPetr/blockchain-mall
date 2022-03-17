@@ -1,6 +1,7 @@
-from error.exceptions import RoomNotExistsError
+from error.exceptions import RoomNotExistsError, TicketNotExistsError
 
 rooms = {}
+tickets = {}
 sign = 0
 sign1 = 0
 
@@ -72,3 +73,51 @@ def set_sign1(_sign1):
 def get_sign1():
     global sign1
     return sign1
+
+
+def add_ticket(ticket):
+    global tickets
+    i = str(len(tickets) + 1)
+    ticket['id'] = i
+    tickets[i] = ticket
+    print("IN add_ticket - ticket: ", str(ticket))
+    return ticket
+
+
+def get_tickets():
+    global ticket
+    print("IN get_tickets - ticket: ", str(ticket))
+    return list(ticket.values())
+
+
+def remove_ticket(id):
+    global tickets
+    if id in tickets:
+        ticket = tickets[id]
+        del tickets[id]
+        print("IN remove_ticket - removed ticket: " + str(ticket) + " with id: ", id)
+        return ticket
+
+    print("IN remove_ticket - not found ticket with id: ", id)
+    raise TicketNotExistsError()
+
+
+def get_ticket_by_id(id):
+    global tickets
+    if id in tickets:
+        print("IN get_ticket_by_id - ticket: ", str(tickets[id]))
+        return tickets[id]
+
+    print("IN get_ticket_by_id - not found ticket with id: ", id)
+    raise TicketNotExistsError()
+
+
+def upd_ticket_data_by_id(id, upd):
+    global tickets
+    if id in tickets:
+        tickets[id].update(upd)
+        print("IN upd_ticket_data_by_id - updated ticket: " + str(tickets[id]) + " with id: ", id)
+        return tickets[id]
+
+    print("IN upd_ticket_data_by_id - not found ticket with id: ", id)
+    raise TicketNotExistsError()

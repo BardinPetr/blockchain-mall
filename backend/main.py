@@ -54,6 +54,8 @@ def graphql_server():
     resp = make_response(jsonify(result))
     resp.status_code = 200 if success else 400
 
+    print("IN graphql_server - data: " + str(data) + " resp: " + str(resp))
+
     token = f_session.get("set_token")
     if token is not None:
         resp.set_cookie("access_token_cookie", token)
