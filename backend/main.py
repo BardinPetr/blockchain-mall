@@ -33,7 +33,6 @@ gql = GraphQL(executable_schema, debug=False, error_formatter=simple_format_erro
 
 async def main(request):
     full_path = request.path_params['full_path']
-    print("Request full_path: " + full_path)
     if full_path == 'graphql' or full_path == "graphql/":
         return gql
 

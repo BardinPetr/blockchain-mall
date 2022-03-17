@@ -1,6 +1,8 @@
 from error.exceptions import RoomNotFoundError
 
 rooms = {}
+sign = 0
+sign1 = 0
 
 
 def add_room(room):
@@ -50,3 +52,23 @@ def upd_room_data_by_id(id, upd):
 
     print("IN upd_room_data_by_id - not found room with id: ", id)
     raise RoomNotFoundError("Room with such ID not found")
+
+
+def set_sign(_sign):
+    global sign
+    sign = _sign
+
+
+def get_sign():
+    global sign
+    return sign
+
+
+def set_sign1(_sign1):
+    global sign1
+    sign1 = _sign1
+
+
+def get_sign1():
+    global sign1
+    return sign1
