@@ -4,7 +4,7 @@ import Input from "./Input";
 import Button from "./Button";
 import { GET_ROOM_FOR_EDIT } from "../gql/queries";
 import { EDIT_ROOM } from "../gql/mutations";
-import { gqlPost } from "../tools/tools";
+import { gqlPost, isLandlord } from "../tools/tools";
 
 function RoomEdit() {
   const { id } = useParams();
@@ -29,30 +29,32 @@ function RoomEdit() {
   };
   return (
     <>
-      <form className="room-form" onSubmit={submitEditRoom}>
-        <Input
-          k="room-form__internal-name"
-          cb={(e) => setInternalName(Number(e.target.value))}
-          type="text"
-          value={internalName}
-          required
-        ></Input>
-        <Input
-          k="room-form__area"
-          cb={(e) => setArea(Number(e.target.value))}
-          type="number"
-          value={area}
-          required
-        ></Input>
-        <Input
-          k="room-form__location"
-          cb={(e) => setLocation(e.target.value)}
-          type="text"
-          value={location}
-          required
-        ></Input>
-        <Button k="room-form__submit" />
-      </form>
+      {isLandlord && (
+        <form className="room-form" onSubmit={submitEditRoom}>
+          <Input
+            k="room-form__internal-name"
+            cb={(e) => setInternalName(Number(e.target.value))}
+            type="text"
+            value={internalName}
+            required
+          ></Input>
+          <Input
+            k="room-form__area"
+            cb={(e) => setArea(Number(e.target.value))}
+            type="number"
+            value={area}
+            required
+          ></Input>
+          <Input
+            k="room-form__location"
+            cb={(e) => setLocation(e.target.value)}
+            type="text"
+            value={location}
+            required
+          ></Input>
+          <Button type="submit" k="room-form__submit" />
+        </form>
+      )}
     </>
   );
 }

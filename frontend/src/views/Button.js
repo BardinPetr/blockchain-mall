@@ -1,6 +1,6 @@
 function Button({ k, ...props }) {
   return (
-    <button type="submit" className={k} {...props}>
+    <button className={k} {...props}>
       {k}
     </button>
   );
