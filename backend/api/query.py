@@ -50,7 +50,7 @@ def resolve_get_room(_, info, id: int):
 
 
 @query.field("rooms")
-def resolve_get_rooms(_, info, id: int):
+def resolve_get_rooms(_, info):
     access_token = get_access_token(info)
     if access_token is None:
         raise AuthenticationRequired()
