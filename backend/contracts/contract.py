@@ -1,4 +1,5 @@
 import json
+import traceback
 
 from web3 import Web3
 import os
@@ -21,7 +22,9 @@ def does_contract_exists(address):
         contract = ContractWrapper(w3, w3.eth.gasPrice, ACCOUNT_PK, abi=ABI, address=address)
         contract.getTenant()
     except Exception as e:
+        print("IN does_contract_exists - contract does not exists with address: " + str(address) + " exception: ", str(e))
         return False
+    print("IN does_contract_exists - contract EXISTS with address: " + str(address))
     return True
 
 
