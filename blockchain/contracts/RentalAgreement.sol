@@ -117,7 +117,7 @@ contract RentalAgreement is EIP712 {
             _inDebt = true;
         } else if(month == (_curMonth + 1)) {
             if(_monthIncome >= _rentalPermit.rentalRate) {
-                _totalIncome += _monthIncome - _rentalPermit.rentalRate;
+                _totalIncome += _monthIncome - (month < _rentalPermit.billingsCount ? _rentalPermit.rentalRate : 0);
                 _monthIncome = 0;
             } else {
                 _inDebt = true;
@@ -147,7 +147,9 @@ contract RentalAgreement is EIP712 {
     }
 
     function getTenantProfit() public view returns (uint) {
-        return _totalIncome + (_monthIncome >= _rentalPermit.rentalRate ? (_monthIncome - _rentalPermit.rentalRate) : 0);
+        uint256 month = getCurMonth();
+        uint256 curRentalRate = (month < (_rentalPermit.billingsCount - 1) ? _rentalPermit.rentalRate : 0);
+        return _totalIncome + (_monthIncome >= curRentalRate ? (_monthIncome - curRentalRate) : 0);
     }
 
     function withdrawTenantProfit() public {
@@ -155,8 +157,8 @@ contract RentalAgreement is EIP712 {
         uint256 profit = getTenantProfit();
         (bool success, ) = (payable(_rentalPermit.tenant)).call{value:profit}("");
         if (success) {
+            _monthIncome = _monthIncome - (profit - _totalIncome);
             _totalIncome = 0;
-            _monthIncome = (_monthIncome >= _rentalPermit.rentalRate ? _rentalPermit.rentalRate : _monthIncome);
         }
     }
 }
