@@ -14,19 +14,25 @@ contract RentalAgreement is EIP712 {
     uint private _roomInternalId;
     address private _landlord;
 
+
     RentalPermit private _rentalPermit;
     uint private _rentStartTime;
     bool private _inRent = false;
+
 
     address[] _cashierAddresses;
     mapping(address => uint256) _cashierNonces;
     uint256 _curCashierNonce = 1;
 
+
+    uint256 _totalLandlordIncome = 0;
+
     uint256 _totalIncome = 0;
     uint256 _monthIncome = 0;
+    bool _inDebt = false;
+
     uint256 _curMonth = 0;
 
-    bool _inDebt = false;
 
     constructor(uint roomInternalId) {
         _landlord = msg.sender;
@@ -78,6 +84,7 @@ contract RentalAgreement is EIP712 {
         _inRent = true;
         _rentStartTime = block.timestamp;
         _rentalPermit = tmpRP;
+        _totalLandlordIncome = tmpRP.rentalRate;
     }
 
     function removeCashier(address cashierAddr) public {
@@ -113,6 +120,27 @@ contract RentalAgreement is EIP712 {
         return ((uint256)(block.timestamp) - (uint256)(_rentStartTime)) / _rentalPermit.billingPeriodDuration;
     }
 
+    function updateIncomes() private {
+        uint256 month = getCurMonth();
+        if (month > (_curMonth + 1)) {
+            _inDebt = true;
+        } else if(month == (_curMonth + 1)) {
+            if(_monthIncome >= _rentalPermit.rentalRate) {
+                if(month == (_rentalPermit.billingsCount - 1)) {
+                    _totalIncome += _monthIncome;
+                } else {
+                    _totalIncome += _monthIncome - _rentalPermit.rentalRate;
+                    _totalLandlordIncome += _rentalPermit.rentalRate;
+                }
+            } else {
+                _inDebt = true;
+                _totalLandlordIncome += _monthIncome;
+            }
+            _monthIncome = 0;
+        }
+        _curMonth = month;
+    }
+
     function pay(uint deadline, uint nonce, uint value, Sign memory cashierSign) public payable {
         Ticket memory t = Ticket(deadline, nonce, value);
         address cashier = getTicketIssuer(t, cashierSign);
@@ -123,22 +151,12 @@ contract RentalAgreement is EIP712 {
         if (msg.value != value) revert("Invalid value");
         if (deadline > getRentEndTime()) revert("The contract is being in not allowed state");
 
-        uint256 month = getCurMonth();
-        if (month > (_curMonth + 1)) {
-            _inDebt = true;
-        } else if(month == (_curMonth + 1)) {
-            if(_monthIncome >= _rentalPermit.rentalRate) {
-                _totalIncome += _monthIncome - _rentalPermit.rentalRate;
-                _monthIncome = value;
-            } else {
-                _inDebt = true;
-            }
-        } else {
-            _monthIncome += value;
-        }
-        _curMonth = month;
+        updateIncomes();
 
-        if (_inDebt) revert("The contract is being in not allowed state");
+        if (_inDebt)
+            revert("The contract is being in not allowed state");
+        else
+            _monthIncome += value;
 
         _cashierNonces[cashier]++;
         emit PurchasePayment(value);
@@ -150,10 +168,32 @@ contract RentalAgreement is EIP712 {
     }
 
     function withdrawTenantProfit() public {
+        updateIncomes();
         uint256 profit = getTenantProfit();
         if(_totalIncome > 0) {
-            (bool success, ) = (payable(_rentalPermit.tenant)).call{value:profit}("");
+            // (bool success, ) = (payable(_rentalPermit.tenant)).call{value:profit}("");
+            bool success = (payable(_rentalPermit.tenant)).send(profit);
             if (success) _totalIncome = 0;
         }
+    }
+
+    function getLandlordProfit() public view  returns (uint) {
+        return _totalLandlordIncome;
+    }
+
+    function withdrawLandlordProfit() public {
+        if(_totalLandlordIncome > 0) {
+            // (bool success, ) = (payable(_landlord)).call{value:_totalLandlordIncome}("");
+            bool success = (payable(_landlord)).send(_totalLandlordIncome);
+            if (success) _totalLandlordIncome = 0;
+        }
+    }
+
+    function endAgreement() public {
+
+    }
+
+    function endAgreementManually(uint deadline, Sign memory landlordSign, Sign memory tenantSign) public {
+
     }
 }
