@@ -29,8 +29,6 @@ def resolve_get_room(_, info, id: int):
     access_token = get_access_token(info)
     if access_token is None:
         raise AuthenticationRequired()
-    # if access_token['role'] != "landlord":
-    #     raise UserIsNotLord()
 
     room = get_room_by_id(id)
     if room.get('isAvailableForRent') is None:
@@ -52,7 +50,7 @@ def resolve_get_room(_, info, id: int):
 
 
 @query.field("rooms")
-def resolve_get_rooms(_, info, id: int):
+def resolve_get_rooms(_, info):
     access_token = get_access_token(info)
     if access_token is None:
         raise AuthenticationRequired()

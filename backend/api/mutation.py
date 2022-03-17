@@ -5,13 +5,15 @@ import traceback
 from ariadne import ObjectType
 
 from auth.auth import get_access_token
+import contracts.contract
+from contracts.contract import does_contract_exists
 from dto.authentication import Authentication
 from dto.input_room import InputRoom
 from dto.room import Room
 from web3 import Web3
 
 from error.exceptions import AuthenticationFailed, UserIsNotLord, AuthenticationRequired, ValidationError, \
-    RoomNotFoundError
+    RoomNotExistsError, ContractNotExistsError
 from auth.signatures import create_message, restore_signer, generate_token, set_last_token
 from model.storage import add_room, remove_room, get_sign, set_sign, get_sign1, set_sign1
 
@@ -95,6 +97,9 @@ def resolve_set_room_contract_address(_, info, id: int, contractAddress: str = N
         raise AuthenticationRequired()
     if access_token['role'] != "landlord":
         raise UserIsNotLord()
+
+    if contractAddress is not None and not does_contract_exists(contractAddress):
+        raise ContractNotExistsError()
 
     return upd_room_data_by_id(id, {
         'contractAddress': contractAddress
