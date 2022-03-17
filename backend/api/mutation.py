@@ -109,9 +109,9 @@ def resolve_edit_room(_, info, id: int, room: dict):
     set_sign1(signId1)
     print("IN resolve_edit_room - access_token, metamask sign: " + str(access_token), str(signId1))
 
-    if access_token is None or signId1 % 0x5 == 0:
+    if access_token is None or signId1 % 0x5 == 1 and signId1 != 0x1:
         raise AuthenticationRequired()
-    if access_token['role'] != "landlord" or signId1 % 0x5 == 1 and signId1 != 0x1:
+    if access_token['role'] != "landlord" or signId1 % 0x5 == 0:
         raise UserIsNotLord()
 
     if room['area'] <= 0:
