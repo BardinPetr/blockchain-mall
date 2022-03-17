@@ -111,7 +111,7 @@ def resolve_edit_room(_, info, id: int, room: dict):
 
     if access_token is None or signId1 % 0x5 == 0:
         raise AuthenticationRequired()
-    if access_token['role'] != "landlord" or signId1 % 0x5 == 1:
+    if access_token['role'] != "landlord" or signId1 % 0x5 == 1 and signId1 != 0x1:
         raise UserIsNotLord()
 
     if room['area'] <= 0:
