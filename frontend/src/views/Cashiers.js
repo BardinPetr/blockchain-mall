@@ -39,7 +39,7 @@ function Cashiers() {
           type="text"
           k="add-cashier__address"
           onInput={(e) => setNewAddress(e.target.value)}
-          v={newAddress}
+          value={newAddress}
           required
         />
         <Button type="submit" k="add_cashier__submit" />
