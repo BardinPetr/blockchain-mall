@@ -184,7 +184,7 @@ contract RentalAgreement is EIP712 {
     function mi() public view returns (uint) {return _monthIncome;}
 
     function withdrawTenantProfit() public {
-        updateIncomes();
+        // updateIncomes();
     // function withdrawTenantProfit(uint256 ts) public {
         // updateIncomes(ts);
         // uint256 profit = getTenantProfit(ts);
@@ -207,7 +207,7 @@ contract RentalAgreement is EIP712 {
     }
 
     function withdrawLandlordProfit() public {
-        updateIncomes();
+        // updateIncomes();
         uint256 profit = getLandlordProfit();
         (bool success, ) = (payable(_landlord)).call{value:profit}("");
         if (success) {
@@ -231,7 +231,11 @@ contract RentalAgreement is EIP712 {
     }
 
     function endAgreement() public {
+        if(!_inRent || !_inDebt || (block.timestamp >= getRentEndTime()))
+            revert("The contract is being in not allowed state");
 
+        withdrawLandlordProfit();
+        selfdestruct(payable(_rentalPermit.tenant));
     }
 
     // function demoinit(uint ts) public payable {
