@@ -4,7 +4,6 @@ import traceback
 from web3 import Web3
 import os
 
-
 from dto.contractinfo import ContractInfo
 from contracts.contract_wrapper import ContractWrapper
 from error.exceptions import ContractNotExistsError
@@ -27,7 +26,8 @@ def getContractInfo(address) -> ContractInfo:
 
     print("IN getContractInfo - trying to initContract; address: " + str(address))
     contract = initContract(address)
-    print("IN getContractInfo - trying to get contract properties; address: " + str(address) + " contract: " + str(contract))
+    print("IN getContractInfo - trying to get contract properties; address: " + str(address) + " contract: " + str(
+        contract))
     try:
         contractInfo = ContractInfo(
             address,
@@ -43,6 +43,7 @@ def getContractInfo(address) -> ContractInfo:
     except BaseException as e:
         print("IN getContractInfo - can't get contractInfo, exception: ", e)
         raise e
+
 
 def does_contract_exists(address):
     try:
