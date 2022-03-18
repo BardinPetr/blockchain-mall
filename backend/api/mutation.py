@@ -193,13 +193,13 @@ def validate_value(value):  # TODO: !!!
         raise ValidationError("Value must be an integer")
 
 
-def validate_deadline(deadline):  # TODO: !!! SEE AC-110-02 POINT 7
+def validate_deadline(deadline):
     try:
         deadline_datetime_raw = deadline['datetime']
-        deadline_datetime = datetime.fromisoformat(deadline_datetime_raw[:-1] + '+00:00')
+        return datetime.fromisoformat(deadline_datetime_raw[:-1])
     except BaseException as e:
         raise ValidationError("Invalid deadline date format")
-    print(deadline_datetime)
+
 
 
 def validate_cashier_signature(address, cashier_signature):  # TODO: !!!
@@ -234,7 +234,7 @@ def resolve_create_ticket(_, info,
     room = get_room_by_id(room_id)  # check if room exists
     validate_nonce(nonce)
     validate_value(value)
-    validate_deadline(deadline)
+    deadline_normal = validate_deadline(deadline)
     signer_address = validate_cashier_signature(address, cashier_signature)
     if room.get('contractAddress') is None:
         raise ValidationError("Room does not have a contract")
