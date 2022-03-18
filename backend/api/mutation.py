@@ -142,6 +142,7 @@ def resolve_remove_room(_, info, id: int):
     contractAddress = room.get('contractAddress')
     if contractAddress is not None and contractAddress != "":
         contractInfo = getContractInfo(contractAddress)
+        print("IN resolve_remove_room - contractInfo: " + str(contractInfo))
         if contractInfo.status == 1:
             raise ValidationError("Room has rented contract in progress")
 
