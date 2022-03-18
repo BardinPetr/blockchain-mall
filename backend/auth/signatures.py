@@ -37,6 +37,7 @@ def restore_signer(address, signature):
 def restore_cashier_signature(ticket: Ticket, signature):
     try:
         msg = ticket.to_message_json(domain)
+        msg = eth_account.messages.encode_structured_data(text=msg)
         return w3.eth.account.recover_message(msg, vrs=(int(signature['v'], 16), signature['r'], signature['s']))
     except BaseException as e:
         raise ValidationError("Unknown cashier")
