@@ -175,7 +175,8 @@ def resolve_set_room_public_name(_, info, id: int, publicName: str = None):
         raise GraphQLError("This room is not rented by you")
 
     contractInfo = getContractInfo(room.get('contractAddress'))
-    print("IN resolve_set_room_public_name - contractInfo: " + str(contractInfo) + " address: " + str(access_token.get("address")))
+    print("IN resolve_set_room_public_name - contractInfo: " + str(contractInfo) + " address: " + str(
+        access_token.get("address")))
     if not contractInfo.isRentEnded() or contractInfo.tenant != access_token.get("address"):
         raise GraphQLError("This room is not rented by you")
 
@@ -207,7 +208,8 @@ def validate_deadline(deadline):
     try:
         print("deadline_date_validation", deadline)
         deadline_datetime_raw = deadline['datetime']
-        return int(datetime.fromisoformat(deadline_datetime_raw.strip("Z") + "+00:00").timestamp())
+        d = datetime.fromisoformat(deadline_datetime_raw.strip("Z") + "+00:00")
+        return int(d.timestamp()), d
     except BaseException as e:
         raise ValidationError("Invalid deadline date format")
 
@@ -244,7 +246,7 @@ def resolve_create_ticket(_, info, ticket: dict):
 
     # nv = validate_nonce(contract_addr, address, nonce)
     validate_value(value)
-    deadline_normal = validate_deadline(deadline)
+    deadline_normal, dt = validate_deadline(deadline)
 
     print("####", deadline, deadline_normal, datetime.now().timestamp())
     if deadline_normal <= datetime.now().timestamp():
@@ -290,6 +292,8 @@ def resolve_create_ticket(_, info, ticket: dict):
         'room':             room,
         'nonce':            {'value': nonce['value']},
         'value':            {'wei': value['wei']},
-        'deadline':         {'datetime': deadline['datetime']},
+        'deadline':         {
+            'datetime':  deadline['datetime']
+        },
         'cashierSignature': cashier_signature,
     })

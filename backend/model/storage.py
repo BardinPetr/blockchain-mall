@@ -121,3 +121,29 @@ def upd_ticket_data_by_id(id, upd):
 
     print("IN upd_ticket_data_by_id - not found ticket with id: ", id)
     raise TicketNotExistsError()
+
+
+add_ticket({
+    "room": {
+        "publicName":      "Coffee & Coffee",
+        "internalName": "324234",
+        "contractAddress": "<room-0-contract>"
+    },
+    "value":            {"wei": "1000"},
+    "deadline":         {"datetime": "2022-03-17T14:56:21.000Z"},
+    "nonce":            "<ticket-0-nonce>",
+    "cashierSignature": {
+        "v": "<signature-0-v>",
+        "r": "<signature-0-r>",
+        "s": "<signature-0-s>"
+    }
+})
+
+add_ticket({
+    "room":     {
+        "internalName": "2nd floor small store",
+        "publicName":   None
+    },
+    "value":    {"wei": "1500"},
+    "deadline": {"datetime": "2022-03-17T13:10:59.000Z"}
+})
