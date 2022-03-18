@@ -43,7 +43,6 @@ class ContractWrapper:
             if 'name' in elem:
                 try:
                     # choose call or buildTransaction
-                    print(elem['name'])
                     if elem['stateMutability'] in ['view', 'pure']:
                         def funct(name):
                             def func(*args, **kwargs):

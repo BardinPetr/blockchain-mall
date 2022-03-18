@@ -1,12 +1,10 @@
 import json
-import traceback
-
-from web3 import Web3
 import os
 
-from dto.contractinfo import ContractInfo
 from contracts.contract_wrapper import ContractWrapper
+from dto.contractinfo import ContractInfo
 from error.exceptions import ContractNotExistsError
+from web3 import Web3
 
 RPC_URL = os.getenv("RPC_URL", "https://sokol.poa.network")
 w3 = Web3(Web3.HTTPProvider(RPC_URL))
@@ -43,6 +41,16 @@ def getContractInfo(address) -> ContractInfo:
     except BaseException as e:
         print("IN getContractInfo - can't get contractInfo, exception: ", e)
         raise e
+
+
+def get_contract_cashiers(address):
+    contract = initContract(address)
+    return contract.getCashiersList()
+
+
+def get_contract_cashier_nonce(address, cashier_addr):
+    contract = initContract(address)
+    return contract.getCashierNonce(cashier_addr)
 
 
 def does_contract_exists(address):
