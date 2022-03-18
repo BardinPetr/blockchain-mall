@@ -80,6 +80,8 @@ def resolve_get_rooms(_, info):
                 tenant_rooms.append(room)
             else:
                 not_tenant_rooms.append(room)
+        elif contractInfo.tenant == currentAddress:
+            tenant_rooms.append(room)
 
     print("IN resolve_get_rooms - tenant_rooms: " + str(tenant_rooms) + " not_tenant_rooms: " + str(not_tenant_rooms))
     if len(tenant_rooms) == 0:
