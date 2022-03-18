@@ -118,14 +118,11 @@ def resolve_set_room_contract_address(_, info, id: int, contractAddress: str = N
 @mutation.field("editRoom")
 def resolve_edit_room(_, info, id: int, room: dict):
     access_token = get_access_token(info)
-    signId1 = get_sign1()
-    signId1 += 0x1
-    set_sign1(signId1)
-    print("IN resolve_edit_room - access_token, metamask sign: " + str(access_token), str(signId1))
+    print("IN resolve_edit_room - access_token" + str(access_token))
 
-    if access_token is None or (signId1 % 0x5 == 1 and signId1 != 0x1):
+    if access_token is None:
         raise AuthenticationRequired()
-    if access_token['role'] != "landlord" or signId1 % 0x5 == 0:
+    if access_token['role'] != "landlord":
         raise UserIsNotLord()
 
     if room['area'] <= 0:
