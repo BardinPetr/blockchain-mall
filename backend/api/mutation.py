@@ -173,9 +173,10 @@ def resolve_set_room_public_name(_, info, id: int, publicName: str = None):
 
 def validate_nonce(contract, cashier, nonce):
     nonce_value = nonce['value']
+    print("nonce_data", nonce_value, contract, cashier)
     real_nonce = get_contract_cashier_nonce(contract, cashier)
     print("validate_nonce", nonce_value, real_nonce, contract, cashier)
-    if real_nonce != nonce_value:
+    if int(real_nonce) != int(nonce_value):
         raise ValidationError("Invalid nonce")
 
 
@@ -252,7 +253,7 @@ def resolve_create_ticket(_, info,
     except:
         raise ValidationError("Invalid cashier signature")
 
-    signer_address = validate_cashier_signature(address, cashier_signature)
+    # signer_address = validate_cashier_signature(address, cashier_signature)
 
     print("resolve_create_ticket_data", room_id, nonce, value, deadline, cashier_signature, room)
     return add_ticket({
