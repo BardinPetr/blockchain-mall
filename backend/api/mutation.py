@@ -16,6 +16,8 @@ from model.storage import add_room, remove_room, get_sign, set_sign, get_sign1, 
 from model.storage import upd_room_data_by_id
 from web3 import Web3
 
+from contracts.contract import get_contract_cashiers, get_contract_cashier_nonce
+
 mutation = ObjectType("Mutation")
 
 LANDLORD_ADDR = os.getenv("LANDLORD_ADDRESS")
@@ -220,23 +222,31 @@ def resolve_create_ticket(_, info,
         raise AuthenticationRequired()
 
     address = access_token.get("address")
-    if access_token['role'] == "landlord":
-        raise UserIsNotCashier()
-    # Here should be authorization check for Cashier role
 
     room_id = ticket.get('room')
     nonce = ticket.get('nonce')
     value = ticket.get('value')
     deadline = ticket.get('deadline')
     cashier_signature = ticket.get('cashierSignature')
+    room = get_room_by_id(room_id)
 
-    room = get_room_by_id(room_id)  # check if room exists
+    if room.get('contractAddress') is None:
+        print("resolve_create_ticket_no_contract")
+        raise ValidationError("Room does not have a contract")
+
+    cashiers = get_contract_cashiers(room.contractAddress)
+    print("resolve_create_ticket_cashiers", cashiers)
+
+    if address not in cashiers:
+        raise UserIsNotCashier()
+
+    # real_nonce = get_contract_cashier_nonce()
+
     # validate_nonce(nonce)
     # validate_value(value)
     # deadline_normal = validate_deadline(deadline)
     # signer_address = validate_cashier_signature(address, cashier_signature)
-    if room.get('contractAddress') is None:
-        raise ValidationError("Room does not have a contract")
+
     print("resolve_create_ticket_data", room_id, nonce, value, deadline, cashier_signature, room)
     return add_ticket({
         'room':             room,
