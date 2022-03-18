@@ -112,14 +112,15 @@ function Room() {
     const rpc = await getRPCUrl();
     console.log(rpc);
     const web3 = new Web3(rpc);
-    tx = web3.eth
+    const tx = web3.eth
       .contract(abi)
-      .constructor({id})
+      .constructor({ id })
       .buildTransaction({
         gasPrice: web3.eth.gasPrice,
-        nonce: web3.eth.getTransactionCount(MAIN_ADDRESS),
+        nonce: web3.eth.getTransactionCount(getAddress()),
         from: getAddress(),
       });
+    // signed = web3.eth.account.signTransaction(tx, priva)
     /*
     def deploy(contract, name, constructor, network="LEFT", retry=False):
     web3 = Web3(HTTPProvider(os.getenv(network + "_RPCURL")))
