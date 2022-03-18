@@ -184,10 +184,7 @@ def validate_nonce(contract, cashier, nonce):
 
 def validate_value(value):
     try:
-        wei = value['wei']
-        if not wei.isdigit():
-            raise ValidationError("Value must be an integer")
-        wei = int(wei)
+        wei = int(value['wei'])
         if wei <= 0:
             raise ValidationError("Value must be greater than zero")
     except BaseException as e:
@@ -237,14 +234,14 @@ def resolve_create_ticket(_, info, ticket: dict):
     validate_value(value)
     deadline_normal = validate_deadline(deadline)
 
+    print("####", deadline, deadline_normal, datetime.now().timestamp())
+    if deadline_normal <= datetime.now().timestamp():
+        raise ValidationError("The operation is outdated")
+
     try:
         int(cashier_signature['r'], 16), int(cashier_signature['s'], 16), int(cashier_signature['v'], 16)
     except:
         raise ValidationError("Invalid cashier signature")
-
-    print("####", deadline, deadline_normal, datetime.now().timestamp())
-    if deadline_normal <= datetime.now().timestamp():
-        raise ValidationError("The operation is outdated")
 
     t = Ticket(deadline=deadline_normal, nonce=int(nonce['value']), value=int(value['wei']))
     addr = restore_cashier_signature(t, cashier_signature, contract_addr)
