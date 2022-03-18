@@ -146,11 +146,11 @@ contract RentalAgreement is EIP712 {
                 uint256 curRentalRate = (month < _rentalPermit.billingsCount ? _rentalPermit.rentalRate : 0);
                 _totalIncome += _monthIncome - curRentalRate;
                 _totalLandlordIncome += curRentalRate;
+                _monthIncome = 0;
             } else {
                 _totalLandlordIncome += _monthIncome;
                 _inDebt = true;
             }
-            _monthIncome = 0;
         }
         _curMonth = month;
     }
