@@ -49,7 +49,7 @@ def does_contract_exists(address):
     try:
         address = w3.toChecksumAddress(address)
         # contract = ContractWrapper(w3, w3.eth.gasPrice, ACCOUNT_PK, abi=ABI, address=address)
-        print(w3.eth.getCode(address))
+        # print(w3.eth.getCode(address))
         if not w3.eth.getCode(address):
             return False
         # contract.getTenant()
