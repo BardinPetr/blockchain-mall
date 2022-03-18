@@ -6,7 +6,8 @@ import jwt
 from eip712_structs import make_domain
 from web3 import Web3
 
-from auth.msgs import AuthMsg
+from backend.dto.ticket import Ticket
+from backend.error.exceptions import ValidationError
 
 LANDLORD_ADDR = os.getenv("LANDLORD_ADDRESS")
 JWTKEY = os.getenv("JWT_KEY", "testkey")
@@ -31,6 +32,14 @@ def restore_signer(address, signature):
     signer = w3.eth.account.recover_message(msg, vrs=(int(signature['v'], 16), signature['r'], signature['s']))
     del store[address]
     return signer
+
+
+def restore_cashier_signature(ticket: Ticket, signature):
+    try:
+        msg = ticket.to_message_json(domain)
+        return w3.eth.account.recover_message(msg, vrs=(int(signature['v'], 16), signature['r'], signature['s']))
+    except BaseException as e:
+        raise ValidationError("Unknown cashier")
 
 
 def generate_token(address, role):

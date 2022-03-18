@@ -6,10 +6,12 @@ import flask
 from ariadne import ObjectType
 from auth.auth import get_access_token
 from auth.signatures import create_message, restore_signer, generate_token
+from auth.signatures import restore_cashier_signature
 from contracts.contract import does_contract_exists
 from contracts.contract import getContractInfo
 from contracts.contract import get_contract_cashiers, get_contract_cashier_nonce
 from dto.authentication import Authentication
+from dto.ticket import Ticket
 from error.exceptions import AuthenticationFailed, UserIsNotLord, AuthenticationRequired, ValidationError, \
     ContractNotExistsError, UserIsNotCashier
 from graphql import GraphQLError
@@ -196,19 +198,9 @@ def validate_deadline(deadline):
     try:
         print("deadline_date_validation", deadline)
         deadline_datetime_raw = deadline['datetime']
-        return datetime.fromisoformat(deadline_datetime_raw[:-1])
+        return int(datetime.fromisoformat(deadline_datetime_raw.strip("Z")).timestamp())
     except BaseException as e:
         raise ValidationError("Invalid deadline date format")
-
-
-def validate_cashier_signature(address, cashier_signature):  # TODO: !!!
-    try:
-        signature = cashier_signature['signature']
-        signer_address = restore_signer(address, signature)
-        # TODO
-        return signer_address
-    except BaseException as e:
-        raise ValidationError("Unknown cashier")
 
 
 @mutation.field("createTicket")  # TODO: !!! SEE AC-110-02
@@ -245,7 +237,7 @@ def resolve_create_ticket(_, info,
     validate_value(value)
     deadline_normal = validate_deadline(deadline)
 
-    if deadline_normal >= datetime.now():
+    if deadline_normal >= datetime.now().timestamp():
         raise ValidationError("The operation is outdated")
 
     try:
@@ -253,7 +245,11 @@ def resolve_create_ticket(_, info,
     except:
         raise ValidationError("Invalid cashier signature")
 
-    # signer_address = validate_cashier_signature(address, cashier_signature)
+    t = Ticket(deadline_normal, int(nonce['value']), int(value['wei']))
+    # addr = restore_cashier_signature(t, cashier_signature)
+    # print("ticket_signature", addr, address)
+    # if addr != address:
+    #     raise ValidationError("Unknown cashier")
 
     print("resolve_create_ticket_data", room_id, nonce, value, deadline, cashier_signature, room)
     return add_ticket({
