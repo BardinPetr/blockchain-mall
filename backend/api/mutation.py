@@ -238,7 +238,7 @@ def resolve_create_ticket(_, info,
     deadline_normal = validate_deadline(deadline)
 
     try:
-        int(cashier_signature['r']), int(cashier_signature['s']), int(cashier_signature['v'])
+        int(cashier_signature['r'], 16), int(cashier_signature['s'], 16), int(cashier_signature['v'], 16)
     except:
         raise ValidationError("Invalid cashier signature")
 
