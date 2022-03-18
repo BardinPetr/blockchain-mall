@@ -63,22 +63,29 @@ def resolve_get_rooms(_, info):
     if access_token['role'] == "landlord":
         return rooms
 
-    tenantAddress = access_token.get('tenantAddress')
+    currentAddress = access_token.get('tenantAddress')
     rooms = list(rooms)
 
-    not_landlord_rooms = []
+    tenant_rooms = []
+    not_tenant_rooms = []
     for room in rooms:
         contractAddress = room.get('contractAddress')
         if contractAddress is None or contractAddress == "":
             continue
 
         contractInfo = getContractInfo(room.get('contractAddress'))
-        print("IN resolve_get_rooms - contractInfo: " + str(contractInfo) + " tenantAddress: " + str(tenantAddress) + " contractInfo.isRentEnded: " + str(contractInfo.isRentEnded()))
-        if not contractInfo.isReadyForRent(): # TODO FIX
-            not_landlord_rooms.append(room)
+        print("IN resolve_get_rooms - contractInfo: " + str(contractInfo) + " tenantAddress: " + str(currentAddress) + " contractInfo.isRentEnded: " + str(contractInfo.isRentEnded()))
+        if not contractInfo.isReadyForRent()
+            if contractInfo.tenant == currentAddress:
+                tenant_rooms.append(room)
+            else:
+                not_tenant_rooms.append(room)
 
-    print("IN resolve_get_rooms - not_landlord_rooms: " + str(not_landlord_rooms))
-    return not_landlord_rooms
+    print("IN resolve_get_rooms - tenant_rooms: " + str(tenant_rooms) + " not_tenant_rooms: " + str(not_tenant_rooms))
+    if len(tenant_rooms) == 0:
+        return not_tenant_rooms
+    else:
+        return tenant_rooms
 
     # rooms_if_tenant = []
     # rooms_if_not_tenant = []
