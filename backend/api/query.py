@@ -65,8 +65,8 @@ def resolve_get_rooms(_, info):
 
     tenantAddress = access_token.get('tenantAddress')
     rooms = list(rooms)
-    rooms_if_tenant = []
-    rooms_if_not_tenant = []
+
+    not_landlord_rooms = []
     for room in rooms:
         contractAddress = room.get('contractAddress')
         if contractAddress is None or contractAddress == "":
@@ -75,16 +75,30 @@ def resolve_get_rooms(_, info):
         contractInfo = getContractInfo(room.get('contractAddress'))
         print("IN resolve_get_rooms - contractInfo: " + str(contractInfo) + " tenantAddress: " + str(tenantAddress) + " contractInfo.isRentEnded: " + str(contractInfo.isRentEnded()))
         if not contractInfo.isRentEnded():
-            if contractAddress is None or contractInfo.tenant != tenantAddress:
-                rooms_if_not_tenant.append(room)
-            else:
-                rooms_if_tenant.append(room)
+            not_landlord_rooms.append(room)
 
-    print("IN resolve_get_rooms - rooms_if_tenant: " + str(rooms_if_tenant) + " rooms_if_not_tenant: " + str(rooms_if_not_tenant))
-    if len(rooms_if_tenant) != 0:
-        return rooms_if_tenant
-    else:
-        return rooms_if_not_tenant
+    return not_landlord_rooms
+
+    # rooms_if_tenant = []
+    # rooms_if_not_tenant = []
+    # for room in rooms:
+    #     contractAddress = room.get('contractAddress')
+    #     if contractAddress is None or contractAddress == "":
+    #         continue
+    #
+    #     contractInfo = getContractInfo(room.get('contractAddress'))
+    #     print("IN resolve_get_rooms - contractInfo: " + str(contractInfo) + " tenantAddress: " + str(tenantAddress) + " contractInfo.isRentEnded: " + str(contractInfo.isRentEnded()))
+    #     if not contractInfo.isRentEnded():
+    #         if contractAddress is None or contractInfo.tenant != tenantAddress:
+    #             rooms_if_not_tenant.append(room)
+    #         else:
+    #             rooms_if_tenant.append(room)
+    #
+    # print("IN resolve_get_rooms - rooms_if_tenant: " + str(rooms_if_tenant) + " rooms_if_not_tenant: " + str(rooms_if_not_tenant))
+    # if len(rooms_if_tenant) != 0:
+    #     return rooms_if_tenant
+    # else:
+    #     return rooms_if_not_tenant
 
 
 @query.field("getContractInfo")
