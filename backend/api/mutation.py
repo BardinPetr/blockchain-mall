@@ -138,6 +138,15 @@ def resolve_remove_room(_, info, id: int):
     if access_token['role'] != "landlord":
         raise UserIsNotLord()
 
+    room = get_room_by_id(id)
+    contractAddress = room.get('contractAddress')
+    print("IN resolve_remove_room - contractAddress: " + str(contractAddress))
+    if contractAddress is not None and contractAddress != "":
+        contractInfo = getContractInfo(contractAddress)
+        print("IN resolve_remove_room - contractInfo: " + str(contractInfo))
+        if contractInfo.status != 3 and contractInfo.status != 2:
+            raise ValidationError("Room has rented contract in progress")
+
     return remove_room(id)
 
 
