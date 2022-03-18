@@ -60,3 +60,9 @@ export const EDIT_PUBLIC_NAME = gql`
     }
   }
 `;
+
+export const ADD_CASHIER = gql`
+  mutation ($id: ID!, $cashier: String!) {
+    addCashier(roomId: $id, cashier: $cashier)
+  }
+`;
