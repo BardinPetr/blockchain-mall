@@ -27,7 +27,7 @@ class ContractInfo:
         return self.status == 3
 
     def isReadyForRent(self):
-        return self.status == 2 or self.status == 3
+        return self.status != 1 # self.status == 2 or self.status == 3
 
     def __str__(self) -> str:
         return "ContractInfo(contractAddress=" + str(self.contractAddress) + "," \
