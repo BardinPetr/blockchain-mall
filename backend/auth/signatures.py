@@ -12,8 +12,6 @@ from error.exceptions import ValidationError
 LANDLORD_ADDR = os.getenv("LANDLORD_ADDRESS")
 JWTKEY = os.getenv("JWT_KEY", "testkey")
 
-domain = make_domain(name='Rental Agreement', version='1.0')
-
 w3 = Web3(Web3.HTTPProvider(os.getenv("RPC_URL")))
 store = {}
 last_token = None
@@ -34,8 +32,9 @@ def restore_signer(address, signature):
     return signer
 
 
-def restore_cashier_signature(ticket: Ticket, signature):
+def restore_cashier_signature(ticket: Ticket, signature, contract):
     try:
+        domain = make_domain(name='Rental Agreement', version='1.0', verifyingContract=contract)
         msg = ticket.to_message_json(domain)
         msg = eth_account.messages.encode_structured_data(text=msg)
         return w3.eth.account.recover_message(msg, vrs=(int(signature['v'], 16), signature['r'], signature['s']))

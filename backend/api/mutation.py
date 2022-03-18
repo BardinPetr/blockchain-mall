@@ -198,12 +198,12 @@ def validate_deadline(deadline):
     try:
         print("deadline_date_validation", deadline)
         deadline_datetime_raw = deadline['datetime']
-        return int(datetime.fromisoformat(deadline_datetime_raw.strip("Z")).timestamp())
+        return int(datetime.fromisoformat(deadline_datetime_raw.strip("Z") + "+00:00").timestamp())
     except BaseException as e:
         raise ValidationError("Invalid deadline date format")
 
 
-@mutation.field("createTicket")  # TODO: !!! SEE AC-110-02
+@mutation.field("createTicket")
 def resolve_create_ticket(_, info, ticket: dict):
     # Ticket: room(id), nonce: value, value: wei, deadline(datetime), cashierSignature: v, r, s
     print("IN resolve_create_ticket")
@@ -247,7 +247,7 @@ def resolve_create_ticket(_, info, ticket: dict):
         raise ValidationError("The operation is outdated")
 
     t = Ticket(deadline=deadline_normal, nonce=int(nonce['value']), value=int(value['wei']))
-    addr = restore_cashier_signature(t, cashier_signature)
+    addr = restore_cashier_signature(t, cashier_signature, contract_addr)
     print("ticket_signature", addr, address)
     if addr != address:
         raise ValidationError("Unknown cashier")
