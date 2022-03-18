@@ -6,8 +6,8 @@ import jwt
 from eip712_structs import make_domain
 from web3 import Web3
 
-from backend.dto.ticket import Ticket
-from backend.error.exceptions import ValidationError
+from dto.ticket import Ticket
+from error.exceptions import ValidationError
 
 LANDLORD_ADDR = os.getenv("LANDLORD_ADDRESS")
 JWTKEY = os.getenv("JWT_KEY", "testkey")
