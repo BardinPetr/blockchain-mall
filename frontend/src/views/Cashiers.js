@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { gqlPost } from "../tools/tools";
 import { useParams } from "react-router-dom";
 import { GET_CASHIERS } from "../gql/queries";
-import { ADD_CASHIERS } from "../gql/mutations";
+import { ADD_CASHIER } from "../gql/mutations";
 
 import Input from "./Input";
 import Button from "./Button";
@@ -19,7 +19,7 @@ function Cashiers() {
   }, []);
 
   const sumbitCashier = async () => {
-    const d = await gqlPost(ADD_CASHIERS, { id, address: newAddress });
+    const d = await gqlPost(ADD_CASHIER, { id, address: newAddress });
     console.log(d);
   }
 
