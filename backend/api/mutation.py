@@ -89,8 +89,7 @@ def resolve_create_room(_, info, room: dict):
 @mutation.field("setRoomContractAddress")
 def resolve_set_room_contract_address(_, info, id: int, contractAddress: str = None):
     access_token = get_access_token(info)
-    print("IN resolve_set_room_contract_address - access_token, headers: ", access_token,
-          info.context.headers)
+
     if access_token is None:
         raise AuthenticationRequired()
     if access_token['role'] != "landlord":
