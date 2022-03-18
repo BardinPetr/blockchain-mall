@@ -170,10 +170,12 @@ def resolve_set_room_public_name(_, info, id: int, publicName: str = None):
     room = get_room_by_id(id)
     contractAddress = room.get('contractAddress')
 
+    print("IN resolve_set_room_public_name - room: " + str(room))
     if contractAddress is None:
         raise GraphQLError("This room is not rented by you")
 
     contractInfo = getContractInfo(room.get('contractAddress'))
+    print("IN resolve_set_room_public_name - contractInfo: " + str(contractInfo) + " address: " + str(access_token.get("address")))
     if not contractInfo.isRentEnded() or contractInfo.tenant != access_token.get("address"):
         raise GraphQLError("This room is not rented by you")
 
