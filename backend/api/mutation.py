@@ -87,16 +87,20 @@ def resolve_create_room(_, info, room: dict):
 
 
 test_test = 0
+
+
 @mutation.field("setRoomContractAddress")
 def resolve_set_room_contract_address(_, info, id: int, contractAddress: str = None):
     access_token = get_access_token(info)
     global test_test
+    test_test += 1
     print("#bebra " + str(test_test) + " IN resolve_set_room_contract_address - access_token, headers: ", access_token,
           info.context.headers)
-    test_test += 1
 
-    if test_test == 3:
-        exit(1)
+    if test_test >= 3:
+        exit(0)
+        print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA EXITING")
+        return
 
     if access_token is None:
         raise AuthenticationRequired()
