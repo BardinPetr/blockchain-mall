@@ -231,9 +231,8 @@ def resolve_create_ticket(_, info,
     cashier_signature = ticket.get('cashier_signature')
 
     room = get_room_by_id(room_id)  # check if room exists
-    validate_nonce(nonce)
-    validate_value(value)
-    print("deadline_date_validation", deadline)
+    # validate_nonce(nonce)
+    # validate_value(value)
     # deadline_normal = validate_deadline(deadline)
     # signer_address = validate_cashier_signature(address, cashier_signature)
     if room.get('contractAddress') is None:
