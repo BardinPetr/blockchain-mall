@@ -26,7 +26,7 @@ class ContractInfo:
     def isRentEnded(self):
         return self.status == 3
 
-    def _str__(self) -> str:
+    def __str__(self) -> str:
         return "ContractInfo(contractAddress="+str(self.contractAddress)+"," \
                 "landlord="+str(self.landlord)+"," \
                 "tenant="+str(self.tenant)+"," \
