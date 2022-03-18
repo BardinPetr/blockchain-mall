@@ -58,11 +58,13 @@ def resolve_get_rooms(_, info):
     if access_token is None:
         raise AuthenticationRequired()
 
+    rooms = get_rooms()
+    print("IN resolve_get_rooms - rooms: " + str(rooms))
     if access_token['role'] == "landlord":
-        return get_rooms()
+        return rooms
 
     tenantAddress = access_token.get('tenantAddress')
-    rooms = list(get_rooms())
+    rooms = list(rooms)
     rooms_if_tenant = []
     rooms_if_not_tenant = []
     for room in rooms:
