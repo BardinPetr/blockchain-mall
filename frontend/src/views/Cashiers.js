@@ -652,7 +652,7 @@ function Cashiers() {
       {addresses && (
         <ul className="cashiers">
           {addresses.map((address) => (
-            <li className="cashier__address">{address}</li>
+            <li><p className="cashier__address">{address}</p></li>
           ))}
         </ul>
       )}
