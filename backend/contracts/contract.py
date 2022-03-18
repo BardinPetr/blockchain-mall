@@ -28,15 +28,21 @@ def getContractInfo(address) -> ContractInfo:
     print("IN getContractInfo - trying to initContract; address: " + str(address))
     contract = initContract(address)
     print("IN getContractInfo - trying to get contract properties; address: " + str(address) + " contract: " + str(contract))
-    return ContractInfo(
-        address,
-        contract.getLandlord(),
-        contract.getTenant(),
-        contract.getRentalRate(),
-        contract.getBillingPeriodDuration(),
-        contract.getBillingsCount(),
-        contract.getStatus()
-    )
+    try:
+        contractInfo = ContractInfo(
+            address,
+            contract.getLandlord(),
+            contract.getTenant(),
+            contract.getRentalRate(),
+            contract.getBillingPeriodDuration(),
+            contract.getBillingsCount(),
+            contract.getStatus()
+        )
+        print("IN getContractInfo - contractInfo: " + str(contractInfo))
+        return contractInfo
+    except BaseException as e:
+        print("IN getContractInfo - can't get contractInfo, exception: ", e)
+        raise e
 
 
 def does_contract_exists(address):
