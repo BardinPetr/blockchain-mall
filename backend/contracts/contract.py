@@ -36,14 +36,13 @@ def getContractInfo(address) -> ContractInfo:
             contract.getRentalRate(),
             contract.getBillingPeriodDuration(),
             contract.getBillingsCount(),
-            contract.getStatus()
+            contract.contractStatus()
         )
         print("IN getContractInfo - contractInfo: " + str(contractInfo))
         return contractInfo
     except BaseException as e:
         print("IN getContractInfo - can't get contractInfo, exception: ", e)
         raise e
-
 
 def does_contract_exists(address):
     try:
