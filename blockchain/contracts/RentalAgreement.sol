@@ -134,12 +134,13 @@ contract RentalAgreement is EIP712 {
         if (_inDebt) return;
 
         if (month > (_curMonth + 1)) {
-            if(month != _rentalPermit.billingsCount) {
+            // if(month != _rentalPermit.billingsCount) {
                 uint256 delta = ((_monthIncome >= _rentalPermit.rentalRate) ? _rentalPermit.rentalRate : _monthIncome);
                 _totalLandlordIncome += delta;
-                _monthIncome -= delta;
+                // _monthIncome -= delta;
                 _inDebt = true;
-            }
+            // }
+            // _inDebt = true;
         } else if(month == (_curMonth + 1)) {
             if(_monthIncome >= _rentalPermit.rentalRate) {
                 uint256 curRentalRate = (month < _rentalPermit.billingsCount ? _rentalPermit.rentalRate : 0);
