@@ -48,6 +48,11 @@ def get_contract_cashiers(address):
     return contract.getCashiersList()
 
 
+def add_contract_cashier(contractAddress, cashier):
+    contract = initContract(contractAddress)
+    return contract.addCashier(cashier)
+
+
 def get_contract_cashier_nonce(address, cashier_addr):
     contract = initContract(address)
     return contract.getCashierNonce(cashier_addr)

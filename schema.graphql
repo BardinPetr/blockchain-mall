@@ -37,6 +37,8 @@ type Mutation {
   removeRoom(id: ID!): Room!
 
   createTicket(ticket: InputTicket!): Ticket!
+
+  addCashier(contractAddress: String, cashier: String): Boolean
 }
 # Authentication
 type Authentication {

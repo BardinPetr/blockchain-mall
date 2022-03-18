@@ -7,7 +7,7 @@ from ariadne import ObjectType
 from auth.auth import get_access_token
 from auth.signatures import create_message, restore_signer, generate_token
 from auth.signatures import restore_cashier_signature
-from contracts.contract import does_contract_exists
+from contracts.contract import does_contract_exists, add_contract_cashier
 from contracts.contract import getContractInfo
 from contracts.contract import get_contract_cashiers, get_contract_cashier_nonce
 from dto.authentication import Authentication
@@ -65,6 +65,15 @@ def resolve_get_access_token(_, info, address: str):
     except BaseException as e:
         print("IN resolve_authenticate" + traceback.format_exc())
         raise AuthenticationFailed()
+
+
+@mutation.field("addCashier")
+def add_cashier(_, info, roomId, cashier: str):
+    access_token = get_access_token(info)
+    print("IN addCashier - access_token: " + str(access_token))
+    room = get_room_by_id(roomId)
+    add_contract_cashier(room['contractAddress'], cashier)
+    return True
 
 
 @mutation.field("createRoom")
