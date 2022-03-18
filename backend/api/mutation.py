@@ -195,6 +195,7 @@ def validate_value(value):  # TODO: !!!
 
 def validate_deadline(deadline):
     try:
+        print("deadline_date_validation", deadline)
         deadline_datetime_raw = deadline['datetime']
         return datetime.fromisoformat(deadline_datetime_raw[:-1])
     except BaseException as e:
@@ -225,6 +226,8 @@ def resolve_create_ticket(_, info,
         raise UserIsNotCashier()
     # Here should be authorization check for Cashier role
 
+    print("new_ticket", ticket)
+
     room_id = ticket.get('room')
     nonce = ticket.get('nonce')
     value = ticket.get('value')
@@ -234,8 +237,9 @@ def resolve_create_ticket(_, info,
     room = get_room_by_id(room_id)  # check if room exists
     validate_nonce(nonce)
     validate_value(value)
-    deadline_normal = validate_deadline(deadline)
-    signer_address = validate_cashier_signature(address, cashier_signature)
+    print("deadline_date_validation", deadline)
+    # deadline_normal = validate_deadline(deadline)
+    # signer_address = validate_cashier_signature(address, cashier_signature)
     if room.get('contractAddress') is None:
         raise ValidationError("Room does not have a contract")
 
