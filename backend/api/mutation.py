@@ -230,6 +230,8 @@ def resolve_create_ticket(_, info, ticket: dict):
     if address not in cashiers:
         raise UserIsNotCashier()
 
+    print("valuecheck", value, value['wei'], type(value['wei']))
+
     validate_nonce(contract_addr, address, nonce)
     validate_value(value)
     deadline_normal = validate_deadline(deadline)
