@@ -195,8 +195,10 @@ def validate_value(value):
     try:
         wei = int(value['wei'])
         if wei <= 0:
+            print("valuecheck", value, value['wei'], type(value['wei']), "GZ")
             raise ValidationError("Value must be greater than zero")
     except BaseException as e:
+        print("valuecheck", value, value['wei'], type(value['wei']), "MBI")
         raise ValidationError("Value must be an integer")
 
 
@@ -238,8 +240,6 @@ def resolve_create_ticket(_, info, ticket: dict):
 
     if address not in cashiers:
         raise UserIsNotCashier()
-
-    print("valuecheck", value, value['wei'], type(value['wei']))
 
     validate_nonce(contract_addr, address, nonce)
     validate_value(value)
