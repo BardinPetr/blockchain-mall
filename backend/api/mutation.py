@@ -204,8 +204,8 @@ def validate_deadline(deadline):
 
 
 @mutation.field("createTicket")  # TODO: !!! SEE AC-110-02
-def resolve_create_ticket(_, info,
-                          ticket: dict):  # Ticket: room(id), nonce: value, value: wei, deadline(datetime), cashierSignature: v, r, s
+def resolve_create_ticket(_, info, ticket: dict):
+    # Ticket: room(id), nonce: value, value: wei, deadline(datetime), cashierSignature: v, r, s
     print("IN resolve_create_ticket")
     print("new_ticket", ticket)
     access_token = get_access_token(info)
@@ -246,11 +246,11 @@ def resolve_create_ticket(_, info,
     if deadline_normal <= datetime.now().timestamp():
         raise ValidationError("The operation is outdated")
 
-    t = Ticket(deadline_normal, int(nonce['value']), int(value['wei']))
-    # addr = restore_cashier_signature(t, cashier_signature)
-    # print("ticket_signature", addr, address)
-    # if addr != address:
-    #     raise ValidationError("Unknown cashier")
+    t = Ticket(deadline=deadline_normal, nonce=int(nonce['value']), value=int(value['wei']))
+    addr = restore_cashier_signature(t, cashier_signature)
+    print("ticket_signature", addr, address)
+    if addr != address:
+        raise ValidationError("Unknown cashier")
 
     print("resolve_create_ticket_data", room_id, nonce, value, deadline, cashier_signature, room)
     return add_ticket({
