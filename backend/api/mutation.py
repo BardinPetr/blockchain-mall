@@ -237,13 +237,14 @@ def resolve_create_ticket(_, info,
     validate_value(value)
     deadline_normal = validate_deadline(deadline)
 
-    if deadline_normal >= datetime.now().timestamp():
-        raise ValidationError("The operation is outdated")
-
     try:
         int(cashier_signature['r']), int(cashier_signature['s']), int(cashier_signature['v'])
     except:
         raise ValidationError("Invalid cashier signature")
+
+    print("####", deadline, deadline_normal, datetime.now().timestamp())
+    if deadline_normal <= datetime.now().timestamp():
+        raise ValidationError("The operation is outdated")
 
     t = Ticket(deadline_normal, int(nonce['value']), int(value['wei']))
     # addr = restore_cashier_signature(t, cashier_signature)
