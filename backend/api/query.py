@@ -68,7 +68,6 @@ def resolve_get_rooms(_, info):
     for room in rooms:
         contractAddress = room.get('contractAddress')
         if contractAddress is None or contractAddress == "":
-            rooms_if_not_tenant.append(room)
             continue
 
         contractInfo = getContractInfo(room.get('contractAddress'))
