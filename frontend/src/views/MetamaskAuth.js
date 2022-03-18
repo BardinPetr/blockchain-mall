@@ -48,7 +48,7 @@ const MetamaskAuth = ({children}) => {
         console.log(wx);
         // window.landlord = wx.role === "landlord"
         setAuthenticated(true);
-        checkAccounts(account);
+        checkAccounts([address]);
     }
 
     const connect = async () => {
