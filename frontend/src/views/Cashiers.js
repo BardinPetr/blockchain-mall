@@ -37,7 +37,7 @@ function Cashiers() {
         <Input
           type="text"
           k="add-cashier__address"
-          onInput={(e) => setNewAddress(e.target.value)}
+          cb={(e) => setNewAddress(e.target.value)}
           v={newAddress}
           required
         />
