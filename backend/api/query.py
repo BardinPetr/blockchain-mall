@@ -1,5 +1,6 @@
 import os
 import time
+import traceback
 from typing import Optional
 
 from ariadne import ObjectType
@@ -34,6 +35,20 @@ def resolve_get_room(_, info, id: int):
         raise AuthenticationRequired()
 
     room = get_room_by_id(id)
+    try:
+        contractInfo = getContractInfo(room.get('contractAddress'))
+        room['landlord'] = contractInfo.landlord
+        room['tenant'] = contractInfo.tenant
+        room['rentalRate'] = contractInfo.rentalRate
+        room['billingPeriodDuration'] = contractInfo.billingPeriodDuration
+        room['billingsCount'] = contractInfo.billingsCount
+        room['status'] = contractInfo.status
+    except BaseException as e:
+        print("IN resolve_get_room - exception during getContractInfo; room: " + str(room) + " exception: " + str(e))
+        print(traceback.format_exc())
+        room['status'] = 0
+        return room
+
     return room
 
 
@@ -53,16 +68,17 @@ def resolve_get_rooms(_, info):
     for room in rooms:
         contractAddress = room.get('contractAddress')
         if contractAddress is None or contractAddress == "":
-            rooms_if_not_tenant.append(room)
             continue
 
         contractInfo = getContractInfo(room.get('contractAddress'))
+        print("IN resolve_get_rooms - contractInfo: " + str(contractInfo) + " tenantAddress: " + tenantAddress + " contractInfo.isRentEnded: " + str(contractInfo.isRentEnded()))
         if not contractInfo.isRentEnded():
             if contractAddress is None or contractInfo.tenant != tenantAddress:
                 rooms_if_not_tenant.append(room)
             else:
                 rooms_if_tenant.append(room)
 
+    print("IN resolve_get_rooms - rooms_if_tenant: " + str(rooms_if_tenant) + " rooms_if_not_tenant: " + str(rooms_if_not_tenant))
     if len(rooms_if_tenant) != 0:
         return rooms_if_tenant
     else:
