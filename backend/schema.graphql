@@ -6,6 +6,8 @@ type Query {
   getRpcUrl: String
 
   ticket(id: ID!): Ticket!
+
+  getCashiers(roomId: ID!): [String]
 }
 
 type ContractInfo {

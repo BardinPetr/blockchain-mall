@@ -8,10 +8,10 @@ from ariadne import ObjectType
 from auth.auth import get_access_token
 from dto.authentication import Authentication
 from dto.contractinfo import ContractInfo
-from error.exceptions import AuthenticationRequired, UserIsNotLord
+from error.exceptions import AuthenticationRequired, UserIsNotLord, ValidationError
 from model.storage import get_room_by_id, get_rooms, get_ticket_by_id
 
-from contracts.contract import getContractInfo
+from contracts.contract import getContractInfo, get_contract_cashiers
 
 query = ObjectType("Query")
 
@@ -130,3 +130,13 @@ def resolve_get_ticket(_, info, id: int):
 @query.field("getRpcUrl")
 def resolve_rpc_url(_, info):
     return os.getenv("RPC_URL")
+
+
+@query.field("getCashiers")
+def resolve_get_cashiers(_, info, roomId):
+    room = get_room_by_id(roomId)
+    contractAddress = room.get('contractAddress')
+    if contractAddress is None:
+        raise ValidationError("Room with id: " + roomId + " doesn't have contractAddress")
+
+    return get_contract_cashiers(contractAddress)
