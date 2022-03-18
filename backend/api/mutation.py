@@ -229,12 +229,13 @@ def resolve_create_ticket(_, info,
     deadline = ticket.get('deadline')
     cashier_signature = ticket.get('cashierSignature')
     room = get_room_by_id(room_id)
+    contract_addr = room.get('contractAddress')
 
-    if room.get('contractAddress') is None:
+    if contract_addr is None:
         print("resolve_create_ticket_no_contract")
         raise ValidationError("Room does not have a contract")
 
-    cashiers = get_contract_cashiers(room.contractAddress)
+    cashiers = get_contract_cashiers(contract_addr)
     print("resolve_create_ticket_cashiers", cashiers)
 
     if address not in cashiers:
