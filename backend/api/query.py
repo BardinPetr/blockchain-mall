@@ -84,10 +84,10 @@ def resolve_get_rooms(_, info):
             tenant_rooms.append(room)
 
     print("IN resolve_get_rooms - tenant_rooms: " + str(tenant_rooms) + " not_tenant_rooms: " + str(not_tenant_rooms))
-    if len(tenant_rooms) == 0:
-        return not_tenant_rooms
-    else:
+    if len(not_tenant_rooms) == 0:
         return tenant_rooms
+    else:
+        return not_tenant_rooms
 
     # rooms_if_tenant = []
     # rooms_if_not_tenant = []
