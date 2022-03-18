@@ -10,7 +10,7 @@ def add_room(room):
     global rooms
     i = str(len(rooms) + 1)
     room['id'] = i
-    room['contractAddress'] = ''
+    room['contractAddress'] = None
     rooms[i] = room
     print("IN add_room - room: ", str(room))
     return room
