@@ -98,9 +98,9 @@ function Room() {
     console.log(res);
   };
 
-  const doAllowRenting = async ()=> {
+  const doAllowRenting = async () => {
     console.log("allowRenting");
-  }
+  };
   return (
     <>
       {!editingPublicName && <Field k="room__name" v={publicName} />}
@@ -120,11 +120,11 @@ function Room() {
       />
       {isLandlord() && !editingPublicName && (
         <>
-        <Button
-          k="room__edit-public-name"
-          onClick={() => setEditingPublicName(true)}
-        />
-          <Button k="room__allow-renting" onClick={doAllowRenting}/>
+          <Button
+            k="room__edit-public-name"
+            onClick={() => setEditingPublicName(true)}
+          />
+          <Button k="room__allow-renting" onClick={doAllowRenting} />
         </>
       )}
       {editingPublicName && (
