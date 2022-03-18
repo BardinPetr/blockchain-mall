@@ -228,7 +228,7 @@ def resolve_create_ticket(_, info,
     nonce = ticket.get('nonce')
     value = ticket.get('value')
     deadline = ticket.get('deadline')
-    cashier_signature = ticket.get('cashier_signature')
+    cashier_signature = ticket.get('cashierSignature')
 
     room = get_room_by_id(room_id)  # check if room exists
     # validate_nonce(nonce)
