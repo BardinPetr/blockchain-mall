@@ -139,9 +139,11 @@ def resolve_remove_room(_, info, id: int):
         raise UserIsNotLord()
 
     room = get_room_by_id(id)
-    contractInfo = getContractInfo(room.get('contractAddress'))
-    if contractInfo.status == 1:
-        raise ValidationError("Room has rented contract in progress")
+    contractAddress = room.get('contractAddress')
+    if contractAddress is not None and contractAddress != "":
+        contractInfo = getContractInfo(contractAddress)
+        if contractInfo.status == 1:
+            raise ValidationError("Room has rented contract in progress")
 
     return remove_room(id)
 
