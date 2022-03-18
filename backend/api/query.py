@@ -63,7 +63,10 @@ def resolve_get_rooms(_, info):
             else:
                 rooms_if_tenant.append(room)
 
-    return rooms
+    if len(rooms_if_tenant) != 0:
+        return rooms_if_tenant
+    else:
+        return rooms_if_not_tenant
 
 
 @query.field("getContractInfo")
