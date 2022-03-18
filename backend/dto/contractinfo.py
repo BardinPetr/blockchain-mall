@@ -26,13 +26,17 @@ class ContractInfo:
     def isRentEnded(self):
         return self.status == 3
 
-    def _str__(self) -> str:
-        return "ContractInfo(contractAddress="+str(self.contractAddress)+"," \
-                "landlord="+str(self.landlord)+"," \
-                "tenant="+str(self.tenant)+"," \
-                "rentalRate="+str(self.rentalRate)+"," \
-                "billingPeriodDuration="+str(self.billingPeriodDuration)+"," \
-                "billingsCount="+str(self.billingsCount)+"," \
-                "status="+str(self.status)+")"
+    def isReadyForRent(self):
+        return self.status == 2
 
-
+    def __str__(self) -> str:
+        return "ContractInfo(contractAddress=" + str(self.contractAddress) + "," \
+                                                                             "landlord=" + str(self.landlord) + "," \
+                                                                                                                "tenant=" + str(
+            self.tenant) + "," \
+                           "rentalRate=" + str(self.rentalRate) + "," \
+                                                                  "billingPeriodDuration=" + str(
+            self.billingPeriodDuration) + "," \
+                                          "billingsCount=" + str(self.billingsCount) + "," \
+                                                                                       "status=" + str(
+            self.status) + ")"
