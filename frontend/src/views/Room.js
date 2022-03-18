@@ -118,7 +118,7 @@ function Room() {
         v={rentalRate}
         f={(rentalRate) => rentalRate.toString() + " wei"}
       />
-      {isLandlord() && !editingPublicName && (
+      {!isLandlord() && !editingPublicName && (
         <>
           <Button
             k="room__edit-public-name"
