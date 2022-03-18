@@ -2,22 +2,19 @@ import os
 import traceback
 from datetime import datetime
 
+import flask
 from ariadne import ObjectType
-from graphql import GraphQLError
-from web3 import Web3
-
 from auth.auth import get_access_token
-from auth.signatures import create_message, restore_signer, generate_token, set_last_token
+from auth.signatures import create_message, restore_signer, generate_token
 from contracts.contract import does_contract_exists
+from contracts.contract import getContractInfo
 from dto.authentication import Authentication
 from error.exceptions import AuthenticationFailed, UserIsNotLord, AuthenticationRequired, ValidationError, \
     ContractNotExistsError, UserIsNotCashier
+from graphql import GraphQLError
 from model.storage import add_room, remove_room, get_sign, set_sign, get_sign1, set_sign1, get_room_by_id, add_ticket
 from model.storage import upd_room_data_by_id
-import contracts.contract
-from contracts.contract import getContractInfo
-
-import flask
+from web3 import Web3
 
 mutation = ObjectType("Mutation")
 
@@ -81,8 +78,8 @@ def resolve_create_room(_, info, room: dict):
 
     return add_room({
         'internalName': room['internalName'],
-        'area': room['area'],
-        'location': room['location']
+        'area':         room['area'],
+        'location':     room['location']
     })
 
 
@@ -124,8 +121,8 @@ def resolve_edit_room(_, info, id: int, room: dict):
 
     return upd_room_data_by_id(id, {
         'internalName': room['internalName'],
-        'area': room['area'],
-        'location': room['location']
+        'area':         room['area'],
+        'location':     room['location']
     })
 
 
@@ -202,7 +199,6 @@ def validate_deadline(deadline):
         raise ValidationError("Invalid deadline date format")
 
 
-
 def validate_cashier_signature(address, cashier_signature):  # TODO: !!!
     try:
         signature = cashier_signature['signature']
@@ -244,9 +240,9 @@ def resolve_create_ticket(_, info,
         raise ValidationError("Room does not have a contract")
 
     return add_ticket({
-        'room': room_id,
-        'nonce': {'value': nonce['value']},
-        'value': {'wei': value['wei']},
-        'deadline': {'datetime': deadline['datetime']},
+        'room':             room_id,
+        'nonce':            {'value': nonce['value']},
+        'value':            {'wei': value['wei']},
+        'deadline':         {'datetime': deadline['datetime']},
         'cashierSignature': {'signature': cashier_signature},
     })
