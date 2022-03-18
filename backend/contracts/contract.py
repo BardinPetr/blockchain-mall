@@ -32,7 +32,7 @@ def getContractInfo(address) -> ContractInfo:
         contract.getRentalRate(),
         contract.getBillingPeriodDuration(),
         contract.getBillingsCount(),
-        contract.getStatus()
+        contract.contractStatus()
     )
 
 
@@ -52,5 +52,5 @@ def does_contract_exists(address):
     print("IN does_contract_exists - contract EXISTS with address: " + str(address))
     return True
 
-# a = does_contract_exists("0x54b0eE7C64202e458BB90C54edf238e47E525413")
+# a = getContractInfo("0x54b0eE7C64202e458BB99C54edf238e47E525413")
 # print(a)
