@@ -212,6 +212,8 @@ def validate_cashier_signature(address, cashier_signature):  # TODO: !!!
 @mutation.field("createTicket")  # TODO: !!! SEE AC-110-02
 def resolve_create_ticket(_, info,
                           ticket: dict):  # Ticket: room(id), nonce: value, value: wei, deadline(datetime), cashierSignature: v, r, s
+    print("IN resolve_create_ticket")
+    print("new_ticket", ticket)
     access_token = get_access_token(info)
     print("IN resolve_create_ticket - access_token: " + str(access_token))
     if access_token is None:
@@ -221,8 +223,6 @@ def resolve_create_ticket(_, info,
     if access_token['role'] == "landlord":
         raise UserIsNotCashier()
     # Here should be authorization check for Cashier role
-
-    print("new_ticket", ticket)
 
     room_id = ticket.get('room')
     nonce = ticket.get('nonce')
@@ -240,7 +240,7 @@ def resolve_create_ticket(_, info,
         raise ValidationError("Room does not have a contract")
 
     return add_ticket({
-        'room':             room_id,
+        'room':             room,
         'nonce':            {'value': nonce['value']},
         'value':            {'wei': value['wei']},
         'deadline':         {'datetime': deadline['datetime']},
