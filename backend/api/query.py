@@ -63,7 +63,7 @@ def resolve_get_rooms(_, info):
     if access_token['role'] == "landlord":
         return rooms
 
-    currentAddress = access_token.get('tenantAddress')
+    currentAddress = access_token.get('address')
     rooms = list(rooms)
 
     tenant_rooms = []
@@ -74,7 +74,7 @@ def resolve_get_rooms(_, info):
             continue
 
         contractInfo = getContractInfo(room.get('contractAddress'))
-        print("IN resolve_get_rooms - contractInfo: " + str(contractInfo) + " tenantAddress: " + str(currentAddress) + " contractInfo.isRentEnded: " + str(contractInfo.isRentEnded()))
+        print("IN resolve_get_rooms - contractInfo: " + str(contractInfo) + " currentAddress: " + str(currentAddress) + " contractInfo.isRentEnded: " + str(contractInfo.isRentEnded()))
         if not contractInfo.isReadyForRent():
             if contractInfo.tenant == currentAddress:
                 tenant_rooms.append(room)
