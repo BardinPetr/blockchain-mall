@@ -31,6 +31,14 @@ type Room {
   location: String!
   contractAddress: String
   publicName: String
+  isAvailableForRent: Boolean
+  status: Int
+  tenant: String
+  rentStart: Int
+  rentEnd: Int
+  billingPeriod: Int
+  rentalRate: Int
+
 }
 input InputRoom {
   internalName: String!

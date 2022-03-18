@@ -3,11 +3,6 @@ pragma solidity ^0.8.11;
 
 import "./EIP712.sol";
 
-    struct Cashier {
-        bool valid;
-        uint256 nonce;
-    }
-
 contract RentalAgreement is EIP712 {
     event PurchasePayment(uint amount);
 
@@ -21,6 +16,8 @@ contract RentalAgreement is EIP712 {
     address[] _cashierAddresses;
     mapping(address => uint256) _cashierNonces;
     uint256 _curCashierNonce = 1;
+
+    uint256 _totalLandlordIncome = 0;
 
     uint256 _totalIncome = 0;
     uint256 _monthIncome = 0;
@@ -78,6 +75,7 @@ contract RentalAgreement is EIP712 {
         _inRent = true;
         _rentStartTime = block.timestamp;
         _rentalPermit = tmpRP;
+        _totalLandlordIncome = msg.value;
     }
 
     function removeCashier(address cashierAddr) public {
@@ -109,6 +107,40 @@ contract RentalAgreement is EIP712 {
         return _cashierAddresses;
     }
 
+    function getCurMonth() private view returns (uint256) {
+        return ((uint256)(block.timestamp) - (uint256)(_rentStartTime)) / _rentalPermit.billingPeriodDuration;
+    }
+
+    // function getCurMonth(uint256 ts) private view returns (uint256) {
+        // return (ts - (uint256)(_rentStartTime)) / _rentalPermit.billingPeriodDuration;
+    // }
+
+    function updateIncomes() private {
+    // function updateIncomes(uint256 ts) private {
+        uint256 month = getCurMonth();
+        // uint256 month = getCurMonth(ts);
+
+        if (_inDebt) return;
+
+        if (month > (_curMonth + 1)) {
+            uint256 delta = ((_monthIncome >= _rentalPermit.rentalRate) ? _rentalPermit.rentalRate : _monthIncome);
+            _totalLandlordIncome += delta;
+            _monthIncome -= delta;
+            _inDebt = true;
+        } else if(month == (_curMonth + 1)) {
+            if(_monthIncome >= _rentalPermit.rentalRate) {
+                uint256 curRentalRate = (month < _rentalPermit.billingsCount ? _rentalPermit.rentalRate : 0);
+                _totalIncome += _monthIncome - curRentalRate;
+                _totalLandlordIncome += curRentalRate;
+            } else {
+                _totalLandlordIncome += _monthIncome;
+                _inDebt = true;
+            }
+            _monthIncome = 0;
+        }
+        _curMonth = month;
+    }
+
     function pay(uint deadline, uint nonce, uint value, Sign memory cashierSign) public payable {
         Ticket memory t = Ticket(deadline, nonce, value);
         address cashier = getTicketIssuer(t, cashierSign);
@@ -119,20 +151,74 @@ contract RentalAgreement is EIP712 {
         if (msg.value != value) revert("Invalid value");
         if (deadline > getRentEndTime()) revert("The contract is being in not allowed state");
 
-        uint256 month = ((uint256)(block.timestamp) - (uint256)(_rentStartTime)) / _rentalPermit.billingPeriodDuration;
-        if (month > (_curMonth + 1)) {
-            _inDebt = true;
-        } else if(month == (_curMonth + 1)) {
-            if(_monthIncome >= _rentalPermit.rentalRate) _totalIncome += _monthIncome - _rentalPermit.rentalRate;
-            else _inDebt = true;
-        } else {
-            _monthIncome += value;
-        }
-        _curMonth = month;
+        updateIncomes();
 
         if (_inDebt) revert("The contract is being in not allowed state");
+
+        _monthIncome += value;
 
         _cashierNonces[cashier]++;
         emit PurchasePayment(value);
     }
+
+    function getTenantProfit() public view returns (uint) {
+    // function getTenantProfit(uint256 ts) public view returns (uint) {
+        // uint256 month = getCurMonth(ts);
+        uint256 month = getCurMonth();
+        uint256 curRentalRate = (month < (_rentalPermit.billingsCount - 1) ? _rentalPermit.rentalRate : 0);
+        return _totalIncome + (_monthIncome >= curRentalRate ? (_monthIncome - curRentalRate) : 0);
+    }
+
+    function ti() public view returns (uint) {return _totalIncome;}
+    function mi() public view returns (uint) {return _monthIncome;}
+
+    function withdrawTenantProfit() public {
+        updateIncomes();
+    // function withdrawTenantProfit(uint256 ts) public {
+        // updateIncomes(ts);
+        // uint256 profit = getTenantProfit(ts);
+        uint256 profit = getTenantProfit();
+        (bool success, ) = (payable(_rentalPermit.tenant)).call{value:profit}("");
+        if (success) {
+            _monthIncome = _monthIncome - (profit - _totalIncome);
+            _totalIncome = 0;
+        }
+    }
+
+    function getLandlordProfit() public view returns (uint) {
+        uint256 profit = _totalLandlordIncome;
+        uint256 month = getCurMonth();
+        if(month != _curMonth) {
+            uint256 curRentalRate = (month < _rentalPermit.billingsCount ? _rentalPermit.rentalRate : 0);
+            profit += ((_monthIncome >= curRentalRate) ? curRentalRate : _monthIncome);
+        }
+        return profit;
+    }
+
+    function withdrawLandlordProfit() public {
+        updateIncomes();
+        uint256 profit = getLandlordProfit();
+        (bool success, ) = (payable(_landlord)).call{value:profit}("");
+        if (success) {
+            _totalLandlordIncome = 0;
+        }
+    }
+
+    // function demoinit(uint ts) public payable {
+    //     RentalPermit memory tmpRP = RentalPermit(300, 0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2, 100, 1000, 5);
+
+    //     _inRent = true;
+    //     _rentStartTime = ts;
+    //     _rentalPermit = tmpRP;
+    //     _totalLandlordIncome = tmpRP.rentalRate;
+    // }
+
+    // function demopay(uint256 ts) public payable {  // TODO REMOVE
+    //     updateIncomes(ts);
+    //     if (_inDebt)
+    //         revert("The contract is being in not allowed state");
+
+    //     _monthIncome += msg.value;
+    //     // _tenantInput += msg.value;
+    // }
 }

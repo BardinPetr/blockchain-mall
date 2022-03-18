@@ -16,3 +16,13 @@ class UserIsNotLord(Exception):
 class ValidationError(Exception):
     def __init__(self, message):
         super().__init__(message)
+
+
+class RoomNotExistsError(Exception):
+    def __init__(self, message):
+        super().__init__(message)
+
+
+class ContractNotExistsError(Exception):
+    def __init__(self):
+        super().__init__("Contract with such address not found")

@@ -33,7 +33,6 @@ gql = GraphQL(executable_schema, debug=False, error_formatter=simple_format_erro
 
 async def main(request):
     full_path = request.path_params['full_path']
-    print("Request full_path: " + full_path)
     if full_path == 'graphql' or full_path == "graphql/":
         return gql
 
@@ -43,11 +42,16 @@ app = Starlette(
         Route('/{full_path:path}', main, methods=["GET", "POST", "OPTIONS"]),
     ],
     middleware=[
-        Middleware(CORSMiddleware, allow_origins=['*'], allow_methods=("GET", "POST", "OPTIONS")),
+        Middleware(CORSMiddleware, allow_methods=("GET", "POST", "OPTIONS"), allow_headers=['*'], allow_credentials=True,
+                   allow_origins=['http://localhost:81',
+                                  'http://localhost:82',
+                                  'http://localhost:3000',
+                                  'http://0.0.0.0:8089']),
         Middleware(CookieMiddleware)
     ],
 )
 
 if __name__ == "__main__":
     print("Starting...")
+    print("LANDLORD_ADDRESS=" + str(os.getenv("LANDLORD_ADDRESS")))
     uvicorn.run("main:app", host="0.0.0.0", port=int(os.getenv("PORT", "81")))

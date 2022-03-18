@@ -10,19 +10,26 @@ export const AUTHENTICATION = gql`
 `;
 
 export const GET_ROOM = gql`
-  query ($id: String) {
-    rooms(id: $id) {
+  query ($id: ID!) {
+    room(id: $id) {
       internalName
       area
       location
       publicName
       contractAddress
+      isAvailableForRent
+      status
+      tenant
+      rentStart
+      rentEnd
+      billingPeriod
+      rentalRate
     }
   }
 `;
 
 export const GET_TENANT_ROOMS = gql`
-  query($address: String) {
+  query ($address: String) {
     rooms(tenantAddress: $address) {
       id
       publicName

@@ -1,7 +1,9 @@
 import { useMutation } from "@apollo/client";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CREATE_ROOM } from "../gql/mutations";
+import { CREATE_ROOM, GET_ACCESS_TOKEN } from "../gql/mutations";
+
+import { gqlPost } from "../tools/tools"
 
 function CreateRoom() {
   const nav = useNavigate();
@@ -10,22 +12,32 @@ function CreateRoom() {
   const [area, setArea] = useState(0);
   const [location, setLocation] = useState("");
 
-  const [createRoomMutation] = useMutation(CREATE_ROOM, {
-    onCompleted: ({ createRoom }) => {
-      nav(`/room/${createRoom.id}`);
-    },
-  });
+  // const [createRoomMutation] = useMutation(CREATE_ROOM, {
+  //   onCompleted: ({ createRoom }) => {
+  //     nav(`/room/${createRoom.id}`);
+  //   },
+  // });
 
   const createRoomSubmit = (e) => {
     e.preventDefault();
-    createRoomMutation({
-      variables: {
+    // createRoomMutation({
+    //   variables: {
+    //     room: {
+    //       internalName: internalName,
+    //       area: area,
+    //       location: location,
+    //     },
+    //   },
+    // });
+    gqlPost(CREATE_ROOM, {
         room: {
           internalName: internalName,
           area: area,
           location: location,
         },
-      },
+    }).then((data) => {
+      console.log(data);
+      nav(`/room/${data.data.createRoom.id}`);
     });
   };
 
