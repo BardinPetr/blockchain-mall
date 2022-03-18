@@ -1,5 +1,6 @@
 import os
 import time
+import traceback
 from typing import Optional
 
 from ariadne import ObjectType
@@ -34,6 +35,20 @@ def resolve_get_room(_, info, id: int):
         raise AuthenticationRequired()
 
     room = get_room_by_id(id)
+    try:
+        contractInfo = getContractInfo(room.get('contractAddress'))
+        room['landlord'] = contractInfo.landlord
+        room['tenant'] = contractInfo.tenant
+        room['rentalRate'] = contractInfo.rentalRate
+        room['billingPeriodDuration'] = contractInfo.billingPeriodDuration
+        room['billingsCount'] = contractInfo.billingsCount
+        room['status'] = contractInfo.status
+    except BaseException as e:
+        print("IN resolve_get_room - exception during getContractInfo; room: " + str(room) + " exception: " + str(e))
+        print(traceback.format_exc())
+        room['status'] = 0
+        return room
+
     return room
 
 
