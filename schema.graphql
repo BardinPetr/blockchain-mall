@@ -38,7 +38,7 @@ type Mutation {
 
   createTicket(ticket: InputTicket!): Ticket!
 
-  addCashier(contractAddress: String, cashier: String): Boolean
+  addCashier(roomId: ID!, cashier: String): Boolean
 }
 # Authentication
 type Authentication {
