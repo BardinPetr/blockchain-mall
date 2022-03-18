@@ -2,9 +2,13 @@ import { useQuery } from "@apollo/client";
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 
-import { GET_ROOM, STATUSES } from "../gql/queries";
+import { abi } from "../abi";
+
+import { Web3 } from "web3";
+
+import { GET_ROOM, STATUSES, GET_RPC_URL } from "../gql/queries";
 import { EDIT_PUBLIC_NAME } from "../gql/mutations";
-import { gqlPost, isLandlord } from "../tools/tools";
+import { gqlPost, isLandlord, DEBUG, getAddress } from "../tools/tools";
 
 import Button from "./Button";
 import Field from "./Field";
@@ -98,8 +102,52 @@ function Room() {
     console.log(res);
   };
 
+  const getRPCUrl = async () => {
+    const d = await gqlPost(GET_RPC_URL);
+    console.log(d);
+    return DEBUG ? "https://sokol.poa.network" : d.data.getRpcUrl;
+  };
+
+  const deployContract = async () => {
+    const rpc = await getRPCUrl();
+    console.log(rpc);
+    const web3 = new Web3(rpc);
+    tx = web3.eth
+      .contract(abi)
+      .constructor({id})
+      .buildTransaction({
+        gasPrice: web3.eth.gasPrice,
+        nonce: web3.eth.getTransactionCount(MAIN_ADDRESS),
+        from: getAddress(),
+      });
+    /*
+    def deploy(contract, name, constructor, network="LEFT", retry=False):
+    web3 = Web3(HTTPProvider(os.getenv(network + "_RPCURL")))
+
+    tx = web3.eth \
+        .contract(bytecode=contract["bin"], abi=contract["abi"]) \
+        .constructor(*constructor) \
+        .buildTransaction({'gasPrice': web3.eth.gasPrice if retry else int(os.getenv(network + "_GASPRICE")),
+                           'nonce': web3.eth.getTransactionCount(MAIN_ADDRESS),
+                           'from': MAIN_ADDRESS})
+
+    try:
+        signed = web3.eth.account.signTransaction(tx, private_key=PRIVKEY)
+        tx_hash = web3.eth.sendRawTransaction(signed.rawTransaction)
+        txr = web3.eth.waitForTransactionReceipt(tx_hash)
+
+        log(network, f"{name} deployed at {txr['contractAddress']}")
+        return txr
+    except ValueError as ex:
+        if ex.args[0]["message"] == 'transaction underpriced':
+            return deploy(contract, name, constructor, network, retry=True)
+    return None
+    */
+  };
+
   const doAllowRenting = async () => {
     console.log("allowRenting");
+    deployContract();
   };
   return (
     <>
@@ -124,8 +172,10 @@ function Room() {
             k="room__edit-public-name"
             onClick={() => setEditingPublicName(true)}
           />
-          <Button k="room__allow-renting" onClick={doAllowRenting} />
         </>
+      )}
+      {isLandlord() && (
+        <Button k="room__allow-renting" onClick={doAllowRenting} />
       )}
       {editingPublicName && (
         <form className="public-name-edit">

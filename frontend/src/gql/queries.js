@@ -58,6 +58,12 @@ export const GET_ALL_ROOMS = gql`
   }
 `;
 
+export const GET_RPC_URL = gql`
+  query {
+    getRpcUrl
+  }
+`;
+
 export const STATUSES = {
   0: "Unavailable for renting",
   1: "Rented",
