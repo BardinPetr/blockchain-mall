@@ -1,6 +1,7 @@
 import os
 import time
 import traceback
+from datetime import datetime
 from typing import Optional
 
 from ariadne import ObjectType
@@ -74,7 +75,8 @@ def resolve_get_rooms(_, info):
             continue
 
         contractInfo = getContractInfo(room.get('contractAddress'))
-        print("IN resolve_get_rooms - contractInfo: " + str(contractInfo) + " currentAddress: " + str(currentAddress) + " contractInfo.isRentEnded: " + str(contractInfo.isRentEnded()))
+        print("IN resolve_get_rooms - contractInfo: " + str(contractInfo) + " currentAddress: " + str(
+            currentAddress) + " contractInfo.isRentEnded: " + str(contractInfo.isRentEnded()))
         if not contractInfo.isRentEnded() or int(contractInfo.tenant, 16) == 0:
             if contractInfo.isReadyForRent():
                 if contractInfo.tenant == currentAddress:
@@ -124,6 +126,9 @@ def resolve_get_contract(_, info, id: int) -> ContractInfo:
 
 @query.field("ticket")
 def resolve_get_ticket(_, info, id: int):
+    t = get_ticket_by_id(id)
+    dt = datetime.fromisoformat(t['deadline']['datetime'].strip("Z") + "+00:00")
+    t['deadline']['beautiful'] = dt.strftime("%a, %w %b %Y %H:%M:%S %Z")
     return get_ticket_by_id(id)
 
 

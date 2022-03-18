@@ -70,6 +70,23 @@ export const GET_CASHIERS = gql`
   }
 `;
 
+export const GET_TICKET = gql`
+  query ($id: ID!) {
+    ticket(id: $id) {
+      room {
+        internalName
+        publicName
+      }
+      value {
+        wei
+      }
+      deadline {
+        beautiful
+      }
+    }
+  }
+`;
+
 export const STATUSES = {
   0: "Unavailable for renting",
   1: "Rented",

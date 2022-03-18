@@ -1,119 +1,120 @@
 type Query {
-  authentication: Authentication
-  rooms(tenantAddress: String): [Room!]!
-  room(id: ID!): Room!
-  getContractInfo(id: ID!): ContractInfo
-  getRpcUrl: String
+    authentication: Authentication
+    rooms(tenantAddress: String): [Room!]!
+    room(id: ID!): Room!
+    getContractInfo(id: ID!): ContractInfo
+    getRpcUrl: String
 
-  ticket(id: ID!): Ticket!
+    ticket(id: ID!): Ticket!
 
-  getCashiers(roomId: ID!): [String]
+    getCashiers(roomId: ID!): [String]
 }
 
 type ContractInfo {
-  id: ID
-  contractAddress: String
-  landlord: String
-  tenant: String
-  rentalRate: Int
-  billingPeriodDuration: Int
-  billingsCount: Int
+    id: ID
+    contractAddress: String
+    landlord: String
+    tenant: String
+    rentalRate: Int
+    billingPeriodDuration: Int
+    billingsCount: Int
 
 }
 
 type Mutation {
-  requestAuthentication(address: String!): String!
-  authenticate(
-    address: String!
-    signedMessage: InputSignature!
-  ): Authentication!
-  getAccessToken(
-    address: String!
-  ): String!
-  createRoom(room: InputRoom!): Room!
-  editRoom(id: ID!, room: InputRoom!): Room!
-  setRoomContractAddress(id: ID!, contractAddress: String): Room!
-  setRoomPublicName(id: ID!, publicName: String): Room!
-  removeRoom(id: ID!): Room!
+    requestAuthentication(address: String!): String!
+    authenticate(
+        address: String!
+        signedMessage: InputSignature!
+    ): Authentication!
+    getAccessToken(
+        address: String!
+    ): String!
+    createRoom(room: InputRoom!): Room!
+    editRoom(id: ID!, room: InputRoom!): Room!
+    setRoomContractAddress(id: ID!, contractAddress: String): Room!
+    setRoomPublicName(id: ID!, publicName: String): Room!
+    removeRoom(id: ID!): Room!
 
-  createTicket(ticket: InputTicket!): Ticket!
+    createTicket(ticket: InputTicket!): Ticket!
 
-  addCashier(roomId: ID!, cashier: String): Boolean
+    addCashier(roomId: ID!, cashier: String): Boolean
 }
 # Authentication
 type Authentication {
-  address: String!
-  isLandlord: Boolean!
+    address: String!
+    isLandlord: Boolean!
 }
 # Rooms
 type Room {
-  id: ID!
-  internalName: String!
-  area: Float!
-  location: String!
-  contractAddress: String
-  publicName: String
-  isAvailableForRent: Boolean
-  status: Int
-  tenant: String
-  rentStart: Int
-  rentEnd: Int
-  billingPeriod: Int
-  rentalRate: Int
+    id: ID!
+    internalName: String!
+    area: Float!
+    location: String!
+    contractAddress: String
+    publicName: String
+    isAvailableForRent: Boolean
+    status: Int
+    tenant: String
+    rentStart: Int
+    rentEnd: Int
+    billingPeriod: Int
+    rentalRate: Int
 
 }
 input InputRoom {
-  internalName: String!
-  area: Float!
-  location: String!
+    internalName: String!
+    area: Float!
+    location: String!
 }
 type Signature {
-v: String!
-r: String!
-s: String!
+    v: String!
+    r: String!
+    s: String!
 }
 input InputSignature {
-v: String!
-r: String!
-s: String!
+    v: String!
+    r: String!
+    s: String!
 }
 
 # Tickets
 type Ticket {
-id: ID!
-room: Room!
-value: Wei!
-deadline: Datetime!
-nonce: Nonce!
-cashierSignature: Signature!
+    id: ID!
+    room: Room!
+    value: Wei!
+    deadline: Datetime!
+    nonce: Nonce!
+    cashierSignature: Signature!
 }
 input InputTicket {
-room: ID!
-nonce: InputNonce!
-value: InputWei!
-deadline: InputDatetime!
-cashierSignature: InputSignature!
+    room: ID!
+    nonce: InputNonce!
+    value: InputWei!
+    deadline: InputDatetime!
+    cashierSignature: InputSignature!
 }
 ## Wei
 type Wei {
-wei: String!
+    wei: String!
 }
 input InputWei {
-wei: String!
+    wei: String!
 }
 ## Datetime
 ##
 ## In ISO 8601 format, e.g. `2022-03-15T06:00:00.000Z`
 type Datetime {
-datetime: String!
+    datetime: String!
+    beautiful: String
 }
 input InputDatetime {
-datetime: String!
+    datetime: String!
 }
 ## Nonce
 type Nonce {
-value: String!
+    value: String!
 }
 input InputNonce {
-value: String!
+    value: String!
 }
