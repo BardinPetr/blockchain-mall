@@ -21,10 +21,13 @@ def initContract(address):
 
 
 def getContractInfo(address) -> ContractInfo:
+    print("IN getContractInfo - address: " + str(address))
     if address is None:
         raise ContractNotExistsError()
 
+    print("IN getContractInfo - trying to initContract; address: " + str(address))
     contract = initContract(address)
+    print("IN getContractInfo - trying to get contract properties; address: " + str(address) + " contract: " + str(contract))
     return ContractInfo(
         address,
         contract.getLandlord(),
