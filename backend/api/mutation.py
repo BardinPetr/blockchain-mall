@@ -187,8 +187,7 @@ def validate_nonce(contract, cashier, nonce):
     print("nonce_data", nonce_value, contract, cashier)
     real_nonce = get_contract_cashier_nonce(contract, cashier)
     print("validate_nonce", nonce_value, real_nonce, contract, cashier)
-    if int(real_nonce) != int(nonce_value):
-        raise ValidationError("Invalid nonce")
+    return int(real_nonce) == int(nonce_value)
 
 
 def validate_value(value):
@@ -241,7 +240,7 @@ def resolve_create_ticket(_, info, ticket: dict):
     if address not in cashiers:
         raise UserIsNotCashier()
 
-    validate_nonce(contract_addr, address, nonce)
+    # nv = validate_nonce(contract_addr, address, nonce)
     validate_value(value)
     deadline_normal = validate_deadline(deadline)
 
@@ -254,11 +253,35 @@ def resolve_create_ticket(_, info, ticket: dict):
     except:
         raise ValidationError("Invalid cashier signature")
 
-    t = Ticket(deadline=deadline_normal, nonce=int(nonce['value']), value=int(value['wei']))
-    addr = restore_cashier_signature(t, cashier_signature, contract_addr)
-    print("ticket_signature", addr, address)
+    cur_nonce = int(nonce['value'])
+    real_user_nonce = get_contract_cashier_nonce(contract_addr, address)
+
+    addr = restore_cashier_signature(Ticket(deadline=deadline_normal,
+                                            nonce=int(nonce['value']),
+                                            value=int(value['wei'])),
+                                     cashier_signature, contract_addr)
+
+    addr_if_real_nonce = restore_cashier_signature(Ticket(deadline=deadline_normal,
+                                                          nonce=real_user_nonce,
+                                                          value=int(value['wei'])),
+                                                   cashier_signature, contract_addr)
+
+    print("ticket_signature", address, addr, addr_if_real_nonce, cur_nonce, real_user_nonce)
+
     if addr != address:
-        raise ValidationError("Unknown cashier")
+        if addr in cashiers:
+            fake_user_nonce = get_contract_cashier_nonce(contract_addr, addr)
+            print("fake_user_nonce", addr, fake_user_nonce)
+            raise ValidationError("Unknown cashier")
+        elif addr_if_real_nonce == address:
+            print("nonce_check_0")
+            raise ValidationError("Invalid nonce")
+        else:
+            print("nonce_check_1")
+            raise ValidationError("Unknown cashier")
+    elif cur_nonce != real_user_nonce:
+        print("nonce_check_2")
+        raise ValidationError("Invalid nonce")
 
     print("resolve_create_ticket_data", room_id, nonce, value, deadline, cashier_signature, room)
     return add_ticket({
