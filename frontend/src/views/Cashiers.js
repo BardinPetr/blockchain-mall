@@ -13,8 +13,9 @@ function Cashiers() {
   const [newAddress, setNewAddress] = useState("");
   useEffect(async () => {
     const d = await gqlPost(GET_CASHIERS, { id });
-    const data = d.data;
+    const data = d.data.getCashiers;
     console.log(d);
+    console.log(data);
     setAddresses(data);
   }, []);
 
@@ -38,7 +39,7 @@ function Cashiers() {
           type="text"
           k="add-cashier__address"
           onInput={(e) => setNewAddress(e.target.value)}
-          v={newAddress}
+          value={newAddress}
           required
         />
         <Button type="submit" k="add_cashier__submit" />
