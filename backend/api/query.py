@@ -71,7 +71,7 @@ def resolve_get_rooms(_, info):
             continue
 
         contractInfo = getContractInfo(room.get('contractAddress'))
-        print("IN resolve_get_rooms - contractInfo: " + str(contractInfo) + " tenantAddress: " + tenantAddress + " contractInfo.isRentEnded: " + str(contractInfo.isRentEnded()))
+        print("IN resolve_get_rooms - contractInfo: " + str(contractInfo) + " tenantAddress: " + str(tenantAddress) + " contractInfo.isRentEnded: " + str(contractInfo.isRentEnded()))
         if not contractInfo.isRentEnded():
             if contractAddress is None or contractInfo.tenant != tenantAddress:
                 rooms_if_not_tenant.append(room)
