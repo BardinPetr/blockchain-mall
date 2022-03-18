@@ -237,11 +237,11 @@ def resolve_create_ticket(_, info,
     # signer_address = validate_cashier_signature(address, cashier_signature)
     if room.get('contractAddress') is None:
         raise ValidationError("Room does not have a contract")
-
+    print("resolve_create_ticket_data", room_id, nonce, value, deadline, cashier_signature, room)
     return add_ticket({
         'room':             room,
         'nonce':            {'value': nonce['value']},
         'value':            {'wei': value['wei']},
         'deadline':         {'datetime': deadline['datetime']},
-        'cashierSignature': {'signature': cashier_signature},
+        'cashierSignature': cashier_signature,
     })
