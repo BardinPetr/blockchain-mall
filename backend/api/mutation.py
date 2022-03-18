@@ -8,6 +8,7 @@ from auth.auth import get_access_token
 from auth.signatures import create_message, restore_signer, generate_token
 from contracts.contract import does_contract_exists
 from contracts.contract import getContractInfo
+from contracts.contract import get_contract_cashiers, get_contract_cashier_nonce
 from dto.authentication import Authentication
 from error.exceptions import AuthenticationFailed, UserIsNotLord, AuthenticationRequired, ValidationError, \
     ContractNotExistsError, UserIsNotCashier
@@ -15,8 +16,6 @@ from graphql import GraphQLError
 from model.storage import add_room, remove_room, get_sign, set_sign, get_sign1, set_sign1, get_room_by_id, add_ticket
 from model.storage import upd_room_data_by_id
 from web3 import Web3
-
-from contracts.contract import get_contract_cashiers, get_contract_cashier_nonce
 
 mutation = ObjectType("Mutation")
 
@@ -172,15 +171,15 @@ def resolve_set_room_public_name(_, info, id: int, publicName: str = None):
     })
 
 
-def validate_nonce(nonce):  # TODO: !!!
-    try:
-        nonce_value = nonce['value']
-
-    except BaseException as e:
+def validate_nonce(contract, cashier, nonce):
+    nonce_value = nonce['value']
+    real_nonce = get_contract_cashier_nonce(contract, cashier)
+    print("validate_nonce", nonce_value, real_nonce, contract, cashier)
+    if real_nonce != nonce_value:
         raise ValidationError("Invalid nonce")
 
 
-def validate_value(value):  # TODO: !!!
+def validate_value(value):
     try:
         wei = value['wei']
         if not wei.isdigit():
@@ -208,7 +207,7 @@ def validate_cashier_signature(address, cashier_signature):  # TODO: !!!
         # TODO
         return signer_address
     except BaseException as e:
-        raise ValidationError("Invalid cashier signature")
+        raise ValidationError("Unknown cashier")
 
 
 @mutation.field("createTicket")  # TODO: !!! SEE AC-110-02
@@ -241,12 +240,19 @@ def resolve_create_ticket(_, info,
     if address not in cashiers:
         raise UserIsNotCashier()
 
-    # real_nonce = get_contract_cashier_nonce()
+    validate_nonce(contract_addr, address, nonce)
+    validate_value(value)
+    deadline_normal = validate_deadline(deadline)
 
-    # validate_nonce(nonce)
-    # validate_value(value)
-    # deadline_normal = validate_deadline(deadline)
-    # signer_address = validate_cashier_signature(address, cashier_signature)
+    if deadline_normal >= datetime.now():
+        raise ValidationError("The operation is outdated")
+
+    try:
+        int(cashier_signature['r']), int(cashier_signature['s']), int(cashier_signature['v'])
+    except:
+        raise ValidationError("Invalid cashier signature")
+
+    signer_address = validate_cashier_signature(address, cashier_signature)
 
     print("resolve_create_ticket_data", room_id, nonce, value, deadline, cashier_signature, room)
     return add_ticket({
