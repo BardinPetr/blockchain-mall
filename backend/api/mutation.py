@@ -197,7 +197,7 @@ def validate_value(value):
         if wei <= 0:
             print("valuecheck", value, value['wei'], type(value['wei']), "GZ")
             raise ValidationError("Value must be greater than zero")
-    except BaseException as e:
+    except ValueError:
         print("valuecheck", value, value['wei'], type(value['wei']), "MBI")
         raise ValidationError("Value must be an integer")
 
