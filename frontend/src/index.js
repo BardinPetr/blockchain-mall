@@ -10,9 +10,8 @@ import {
 import { BASE_URL } from "./tools/tools"
 import App from "./App";
 
-const DEBUG = true;
 const httpLink = createHttpLink({
-  uri: `${DEBUG ? "http://0.0.0.0:8089" : "http://localhost:82"}/graphql`,
+  uri: BASE_URL,
   credentials: "include",
 });
 

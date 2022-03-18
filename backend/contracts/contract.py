@@ -39,9 +39,11 @@ def getContractInfo(address) -> ContractInfo:
 def does_contract_exists(address):
     try:
         address = w3.toChecksumAddress(address)
-        contract = ContractWrapper(w3, w3.eth.gasPrice, ACCOUNT_PK, abi=ABI, address=address)
-        contract.getTenant()
-        w3.eth.getCode(address)
+        # contract = ContractWrapper(w3, w3.eth.gasPrice, ACCOUNT_PK, abi=ABI, address=address)
+        print(w3.eth.getCode(address))
+        if not w3.eth.getCode(address):
+            return False
+        # contract.getTenant()
     except BaseException as e:
         print("IN does_contract_exists - RPC_URL: ", str(RPC_URL))
         print("IN does_contract_exists - contract does not exists with address: " +
@@ -50,5 +52,5 @@ def does_contract_exists(address):
     print("IN does_contract_exists - contract EXISTS with address: " + str(address))
     return True
 
-# a = getContractInfo('123', "0x54b0eE7C64202e458BB99C54edf238e47E525413")
+# a = does_contract_exists("0x54b0eE7C64202e458BB90C54edf238e47E525413")
 # print(a)

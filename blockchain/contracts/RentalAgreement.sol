@@ -134,10 +134,13 @@ contract RentalAgreement is EIP712 {
         if (_inDebt) return;
 
         if (month > (_curMonth + 1)) {
-            uint256 delta = ((_monthIncome >= _rentalPermit.rentalRate) ? _rentalPermit.rentalRate : _monthIncome);
-            _totalLandlordIncome += delta;
-            _monthIncome -= delta;
-            _inDebt = true;
+            // if(month != _rentalPermit.billingsCount) {
+                uint256 delta = ((_monthIncome >= _rentalPermit.rentalRate) ? _rentalPermit.rentalRate : _monthIncome);
+                _totalLandlordIncome += delta;
+                // _monthIncome -= delta;
+                _inDebt = true;
+            // }
+            // _inDebt = true;
         } else if(month == (_curMonth + 1)) {
             if(_monthIncome >= _rentalPermit.rentalRate) {
                 uint256 curRentalRate = (month < _rentalPermit.billingsCount ? _rentalPermit.rentalRate : 0);
@@ -231,7 +234,11 @@ contract RentalAgreement is EIP712 {
     }
 
     function endAgreement() public {
+        if(!_inRent || !_inDebt || (block.timestamp >= getRentEndTime()))
+            revert("The contract is being in not allowed state");
 
+        withdrawLandlordProfit();
+        selfdestruct(payable(_rentalPermit.tenant));
     }
 
     // function demoinit(uint ts) public payable {
