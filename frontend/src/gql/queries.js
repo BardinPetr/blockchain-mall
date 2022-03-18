@@ -64,6 +64,12 @@ export const GET_RPC_URL = gql`
   }
 `;
 
+export const GET_CASHIERS = gql`
+  query ($id: ID!) {
+    getCashiers(roomId: $id)
+  }
+`;
+
 export const STATUSES = {
   0: "Unavailable for renting",
   1: "Rented",
