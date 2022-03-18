@@ -15,7 +15,7 @@ contract RentalAgreement is EIP712 {
 
     address[] _cashierAddresses;
     mapping(address => uint256) _cashierNonces;
-    uint256 _curCashierNonce = 0;
+    uint256 _curCashierNonce = 1;
 
     uint256 _totalLandlordIncome = 0;
 
@@ -180,9 +180,6 @@ contract RentalAgreement is EIP712 {
         // uint256 month = getCurMonth(ts);
         uint256 month = getCurMonth();
         uint256 curRentalRate = (month < (_rentalPermit.billingsCount - 1) ? _rentalPermit.rentalRate : 0);
-        // if(_inDebt || (_monthIncome)) {
-            // return _totalIncome;
-        // }
         return _totalIncome + (_monthIncome >= curRentalRate ? (_monthIncome - curRentalRate) : 0);
     }
 
