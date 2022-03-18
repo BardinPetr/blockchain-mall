@@ -42,7 +42,7 @@ function Cashiers() {
           value={newAddress}
           required
         />
-        <Button type="submit" k="add_cashier__submit" />
+        <Button type="submit" k="add-cashier__submit" />
       </form>
     </>
   );
