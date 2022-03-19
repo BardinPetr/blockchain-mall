@@ -28,6 +28,16 @@ export const GET_ROOM = gql`
   }
 `;
 
+export const GET_ROOM_FOR_EDIT = gql`
+  query ($id: ID!) {
+    room(id: $id) {
+      internalName
+      area
+      location
+    }
+  }
+`;
+
 export const GET_TENANT_ROOMS = gql`
   query ($address: String) {
     rooms(tenantAddress: $address) {
@@ -44,6 +54,35 @@ export const GET_ALL_ROOMS = gql`
       id
       publicName
       status
+    }
+  }
+`;
+
+export const GET_RPC_URL = gql`
+  query {
+    getRpcUrl
+  }
+`;
+
+export const GET_CASHIERS = gql`
+  query ($id: ID!) {
+    getCashiers(roomId: $id)
+  }
+`;
+
+export const GET_TICKET = gql`
+  query ($id: ID!) {
+    ticket(id: $id) {
+      room {
+        internalName
+        publicName
+      }
+      value {
+        wei
+      }
+      deadline {
+        beautiful
+      }
     }
   }
 `;

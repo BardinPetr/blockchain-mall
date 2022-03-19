@@ -27,9 +27,9 @@ export const decodeAuthCookie = () => {
 };
 
 export const isLandlord = () => decodeAuthCookie().role === "landlord";
-export const getAddress = () => decodeAuthCookie().address
+export const getAddress = () => decodeAuthCookie().address;
 
-const DEBUG = true;
+export const DEBUG = false;
 export const BASE_URL = `${
   DEBUG ? "http://0.0.0.0:8089" : window.location.origin
 }/graphql`;

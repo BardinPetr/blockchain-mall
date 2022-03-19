@@ -16,7 +16,7 @@ function Rooms() {
   const [rooms, setRooms] = useState([]);
   useEffect(async () => {
     const d = await gqlPost(isLandlord() ? GET_ALL_ROOMS : GET_TENANT_ROOMS, {
-      address: getAddress(),
+      address: isLandlord() ? getAddress() : undefined,
     });
     console.log(d);
     let data = d.data.rooms;
@@ -29,7 +29,7 @@ function Rooms() {
       {/*{isAuthError && <p>Auth error!</p>}*/}
       {/* {isError && <p>Error!</p>} */}
       {isLandlord() && (
-        <a className="rooms__create" href="/rooms/create/">
+        <a className="rooms__create" href="/rooms/create">
           rooms__create
         </a>
       )}

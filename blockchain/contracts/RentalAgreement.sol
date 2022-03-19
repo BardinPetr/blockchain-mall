@@ -30,6 +30,13 @@ contract RentalAgreement is EIP712 {
         _roomInternalId = roomInternalId;
     }
 
+    function contractStatus() public view returns(uint) {
+        if (block.timestamp >= getRentEndTime()) return 3;
+        if (!_inRent) return 2;
+        if (_inDebt) return 0;
+        return 1;
+    }
+
     function getRoomInternalId() public view returns (uint) {
         return _roomInternalId;
     }
@@ -48,6 +55,10 @@ contract RentalAgreement is EIP712 {
 
     function getBillingPeriodDuration() public view returns (uint) {
         return _rentalPermit.billingPeriodDuration;
+    }
+
+    function getBillingsCount() public view returns (uint) {
+        return _rentalPermit.billingsCount;
     }
 
     function getRentStartTime() public view returns (uint) {
@@ -123,20 +134,23 @@ contract RentalAgreement is EIP712 {
         if (_inDebt) return;
 
         if (month > (_curMonth + 1)) {
-            uint256 delta = ((_monthIncome >= _rentalPermit.rentalRate) ? _rentalPermit.rentalRate : _monthIncome);
-            _totalLandlordIncome += delta;
-            _monthIncome -= delta;
-            _inDebt = true;
+            // if(month != _rentalPermit.billingsCount) {
+                uint256 delta = ((_monthIncome >= _rentalPermit.rentalRate) ? _rentalPermit.rentalRate : _monthIncome);
+                _totalLandlordIncome += delta;
+                // _monthIncome -= delta;
+                _inDebt = true;
+            // }
+            // _inDebt = true;
         } else if(month == (_curMonth + 1)) {
             if(_monthIncome >= _rentalPermit.rentalRate) {
                 uint256 curRentalRate = (month < _rentalPermit.billingsCount ? _rentalPermit.rentalRate : 0);
                 _totalIncome += _monthIncome - curRentalRate;
                 _totalLandlordIncome += curRentalRate;
+                _monthIncome = 0;
             } else {
                 _totalLandlordIncome += _monthIncome;
                 _inDebt = true;
             }
-            _monthIncome = 0;
         }
         _curMonth = month;
     }
@@ -202,6 +216,29 @@ contract RentalAgreement is EIP712 {
         if (success) {
             _totalLandlordIncome = 0;
         }
+    }
+
+    function endAgreementManually(uint deadline, Sign memory landlordSign, Sign memory tenantSign) public {
+        if(!_inRent) revert("The contract is being in not allowed state");
+
+        EndConsent memory tmp = EndConsent(deadline);
+        address tAddr = getEndConsentIssuer(tmp, tenantSign);
+        address lAddr = getEndConsentIssuer(tmp, landlordSign);
+
+        if(tAddr != _rentalPermit.tenant) revert("Invalid tenant sign");
+        if(lAddr != _landlord) revert("Invalid landlord sign");
+        if(deadline < block.timestamp) revert("The operation is outdated");
+
+        withdrawLandlordProfit();
+        selfdestruct(payable(_rentalPermit.tenant));
+    }
+
+    function endAgreement() public {
+        if(!_inRent || !_inDebt || (block.timestamp >= getRentEndTime()))
+            revert("The contract is being in not allowed state");
+
+        withdrawLandlordProfit();
+        selfdestruct(payable(_rentalPermit.tenant));
     }
 
     // function demoinit(uint ts) public payable {

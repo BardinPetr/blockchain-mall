@@ -53,8 +53,8 @@ function CreateRoom() {
         />
         <input
           type="number"
-          className=".room-form__area"
-          placeholder=".room-form__area"
+          className="room-form__area"
+          placeholder="room-form__area"
           required
           onInput={(e) => setArea(Number(e.target.value))}
         />
@@ -65,7 +65,7 @@ function CreateRoom() {
           required
           onInput={(e) => setLocation(e.target.value)}
         />
-        <button type="sumbit" className="room-form__submit">
+        <button type="submit" className="room-form__submit">
           room-form__submit
         </button>
       </form>

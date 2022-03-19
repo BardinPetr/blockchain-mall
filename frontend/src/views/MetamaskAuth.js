@@ -30,7 +30,7 @@ const MetamaskAuth = ({children}) => {
 
         const sign = await eth.request({
             method: "personal_sign",
-            params: [Web3.utils.toHex(res.data.message), address],
+            params: [Web3.utils.utf8ToHex(res.data.message), address],
             from: address,
         });
 
@@ -48,6 +48,7 @@ const MetamaskAuth = ({children}) => {
         console.log(wx);
         // window.landlord = wx.role === "landlord"
         setAuthenticated(true);
+        checkAccounts([address]);
     }
 
     const connect = async () => {
